@@ -31,8 +31,8 @@ global.dev = ""
 global.author = ""
 global.etiqueta = ""
 global.currency = "¥enes"
-global.banner = "https://files.catbox.moe/d8hjss.jpg"
-global.icono = "https://files.catbox.moe/d8hjss.jpg"
+global.banner = "https://files.catbox.moe/7clohd.jpg"
+global.icono = "https://files.catbox.moe/7clohd.jpg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
