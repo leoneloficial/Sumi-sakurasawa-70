@@ -45,7 +45,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       from,
       {
         text:
-          '「✦」Responde a una *imagen* o *video* para crear el sticker.\n' +
+          '「❀」Responde a una *imagen* o *video* para crear el sticker.\n' +
           `> ✐ Ejemplo » *${usedPrefix + command} circle*\n` +
           `> ✐ Lista » *${usedPrefix + command} list*`
       },
@@ -111,7 +111,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       from,
       {
         text:
-          '「✦」Error creando el sticker.\n\n' +
+          '「❀」Error creando el sticker.\n\n' +
           `> ✐ Estilo: *${style}*\n` +
           `> ✐ ffmpeg: \`${ffmpegCmd}\`\n\n` +
           `> ✐ Error:\n\`\`\`\n${err.slice(0, 3500)}\n\`\`\``
