@@ -31,8 +31,8 @@ global.dev = ""
 global.author = ""
 global.etiqueta = ""
 global.currency = "¥enes"
-global.banner = "https://qu.ax/HRhQp.jpg"
-global.icono = "https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1742678797993.jpeg"
+global.banner = "https://files.catbox.moe/d8hjss.jpg"
+global.icono = "https://files.catbox.moe/d8hjss.jpg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
