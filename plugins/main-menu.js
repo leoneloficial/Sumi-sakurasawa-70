@@ -8,7 +8,7 @@ let totalCommands = Object.values(global.plugins).filter((v) => v.help && v.tags
 
 let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮
 ︶•︶°︶•︶°︶•︶°︶•︶°︶•︶°︶
-> ❀ hola! @${userId.split('@')[0]}, Soy ${botname}, Aquí tienes la lista de comandos.
+> ❀ hola! ${m.pushName}, Soy ${botname}, Aquí tienes la lista de comandos.
 
 ╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 │✦ *Tipo* » ${(conn.user.jid == global.conn.user.jid ? 'Principal' : 'Sub-Bot')}
