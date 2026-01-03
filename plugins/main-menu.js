@@ -238,7 +238,7 @@ let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮  
 ┃ › _Ver tu nivel y experiencia actual._
 ┃ ✿ #marry • #casarse
 ┃ › _Casarte con alguien._
-┃ ✿ `#profile`
+┃ ✿ #profile
 ┃ › _Ver tu perfil._
 ┃ ✿ #setbirth
 ┃ › _Establecer tu fecha de cumpleaños._
