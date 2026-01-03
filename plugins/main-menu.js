@@ -325,7 +325,7 @@ let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮  
 ┃ › _Ver lista de usuarios en línea._
 ┃ ✿ #gp • #infogrupo
 ┃ › _Ver la información del grupo._
-┃ ✿ `#link
+┃ ✿ #link
 ┃ › _Ver enlace de invitación del grupo._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
