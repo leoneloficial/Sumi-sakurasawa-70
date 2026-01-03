@@ -25,7 +25,7 @@ global.yukiJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.botname = "sumi sakurasawa "
+global.botname = " ✿ sumi sakurasawa ✿ "
 global.textbot = ""
 global.dev = ""
 global.author = ""
