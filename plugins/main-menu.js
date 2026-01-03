@@ -352,7 +352,7 @@ let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮  
 ┃ › _Llorar por algo o alguien._
 ┃ ✿ #cuddle • #acurrucarse
 ┃ › _Acurrucarse._
-┃ ✿ `#dance • #bailar`
+┃ ✿ #dance • #bailar
 ┃ › _Sácate los pasitos prohibidos._
 ┃ ✿ #dramatic • #drama
 ┃ › _Drama._
