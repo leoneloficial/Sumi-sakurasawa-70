@@ -8,7 +8,7 @@ let totalCommands = Object.values(global.plugins).filter((v) => v.help && v.tags
 
 let txt = ` > ❀ hola! ${m.pushName}, Soy ${botname}, Aquí tienes la lista de comandos.
 
-canal oficial » https://whatsapp.com/channel/0029Vagdmfv1SWt5nfdR4z3w
+*❀ canal oficial »* https://whatsapp.com/channel/0029Vagdmfv1SWt5nfdR4z3w
 
 ╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 │✦ *Tipo* » ${(conn.user.jid == global.conn.user.jid ? 'Principal' : 'Sub-Bot')}
