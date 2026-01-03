@@ -25,427 +25,427 @@ let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮  
 ┃ › _Ganar coins trabajando._
 ┃ ✿ #slut • #prostitución
 ┃ › _Ganar coins prostituyéndote._
-┃ ✿ `#coinflip • #flip • #cf [cantidad]`
+┃ ✿ #coinflip • #flip • #cf [cantidad]
 ┃ › _Apostar coins en un cara o cruz._
-┃ ✿ `#crime • #crimen`
+┃ ✿ #crime • #crimen
 ┃ › _Ganar coins rápido._
-┃ ✿ `#roulette • #rt [red/black]`
+┃ ✿ #roulette • #rt [red/black]
 ┃ › _Apostar coins en una ruleta._
-┃ ✿ `#casino • #apostar • #slot`
+┃ ✿ #casino • #apostar • #slot
 ┃ › _Apuestas coins en el casino._
-┃ ✿ `#balance • #bal • #bank`
+┃ ✿ #balance • #bal • #bank
 ┃ › _Ver cuantos coins tienes en el banco._
-┃ ✿ `#deposit • #dep • #depositar`
+┃ ✿ #deposit • #dep • #depositar
 ┃ › _Depositar tus coins en el banco._
-┃ ✿ `#withdraw • #with • #retirar`
+┃ ✿ #withdraw • #with • #retirar
 ┃ › _Retirar tus coins del banco._
-┃ ✿ `#economyinfo • #einfo`
+┃ ✿ #economyinfo • #einfo
 ┃ › _Ver tu información de economía en el grupo._
-┃ ✿ `#givecoins • #pay • #coinsgive`
+┃ ✿ #givecoins • #pay • #coinsgive
 ┃ › _Dar coins a un usuario._
-┃ ✿ `#miming • #minar • #mine`
+┃ ✿ #miming • #minar • #mine
 ┃ › _Realizar trabajos de minería y ganar coins._
-┃ ✿ `#daily • #diario`
+┃ ✿ #daily • #diario
 ┃ › _Reclamar tu recompensa diaria._
-┃ ✿ `#cofre • #coffer`
+┃ ✿ #cofre • #coffer
 ┃ › _Reclamar tu cofre diario._
-┃ ✿ `#weekly • #semanal`
+┃ ✿ #weekly • #semanal
 ┃ › _Reclamar tu recompensa semanal._
-┃ ✿ `#monthly • #mensual`
+┃ ✿ #monthly • #mensual
 ┃ › _Reclamar tu recompensa mensual._
-┃ ✿ `#steal • #robar • #rob`
+┃ ✿ #steal • #robar • #rob
 ┃ › _Intentar robar coins a un usuario._
-┃ ✿ `#economyboard • #eboard • #baltop`
+┃ ✿ #economyboard • #eboard • #baltop
 ┃ › _Ver el ranking de economía en el grupo._
-┃ ✿ `#aventura • #adventure`
+┃ ✿ #aventura • #adventure
 ┃ › _Aventuras para ganar coins y exp._
-┃ ✿ `#curar • #heal`
+┃ ✿ #curar • #heal
 ┃ › _Curar salud para salir de aventuras._
-┃ ✿ `#cazar • #hunt`
+┃ ✿ #cazar • #hunt
 ┃ › _Cazar animales para ganar coins y exp._
-┃ ✿ `#fish • #pescar`
+┃ ✿ #fish • #pescar
 ┃ › _Ganar coins y exp pescando._
-┃ ✿ `#mazmorra • #dungeon`
+┃ ✿ #mazmorra • #dungeon
 ┃ › _Explorar mazmorras para ganar coins y exp._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ DESCARGAS* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ DESCARGAS*.
 ┃
-┃ ✿ `#tiktok • #tt [Link]`
+┃ ✿ #tiktok • #tt [Link]
 ┃ › _Descargar un video de TikTok._
-┃ ✿ `#wagroups • #wpgroups`
+┃ ✿ #wagroups • #wpgroups
 ┃ › _Buscar grupos de WhatsApp._
-┃ ✿ `#mediafire • #mf`
+┃ ✿ #mediafire • #mf
 ┃ › _Descargar un archivo de MediaFire._
-┃ ✿ `#mega • #mg`
+┃ ✿ #mega • #mg
 ┃ › _Descargar un archivo de MEGA._
-┃ ✿ `#play • #ytmp3 • #ytmp4`
+┃ ✿ #play • #ytmp3 • #ytmp4
 ┃ › _Descargar una canción o vídeo de YouTube._
-┃ ✿ `#facebook • #fb`
+┃ ✿ #facebook • #fb
 ┃ › _Descargar un video de Facebook._
-┃ ✿ `#twitter • #x`
+┃ ✿ #twitter • #x
 ┃ › _Descargar un video de Twitter/X._
-┃ ✿ `#ig • #instagram`
+┃ ✿ #ig • #instagram
 ┃ › _Descargar un reel de Instagram._
-┃ ✿ `#pinterest • #pin`
+┃ ✿ #pinterest • #pin
 ┃ › _Buscar y descargar imágenes de Pinterest._
-┃ ✿ `#image • #imagen`
+┃ ✿ #image • #imagen
 ┃ › _Buscar y descargar imágenes de Google._
-┃ ✿ `#apk • #modapk`
+┃ ✿ #apk • #modapk
 ┃ › _Descargar un apk de Aptoide._
-┃ ✿ `#ytsearch • #search`
+┃ ✿ #ytsearch • #search
 ┃ › _Buscar videos de YouTube._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ GACHA* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ GACHA*.
 ┃
-┃ ✿ `#buycharacter • #buychar`
+┃ ✿ #buycharacter • #buychar
 ┃ › _Comprar un personaje en venta._
-┃ ✿ `#charimage • #waifuimage`
+┃ ✿ #charimage • #waifuimage
 ┃ › _Ver una imagen aleatoria de un personaje._
-┃ ✿ `#charinfo • #winfo`
+┃ ✿ #charinfo • #winfo
 ┃ › _Ver información de un personaje._
-┃ ✿ `#claim • #c • #reclamar`
+┃ ✿ #claim • #c • #reclamar
 ┃ › _Reclamar un personaje._
-┃ ✿ `#delclaimmsg`
+┃ ✿ #delclaimmsg
 ┃ › _Restablecer el mensaje al reclamar un personaje._
-┃ ✿ `#deletewaifu • #delwaifu`
+┃ ✿ #deletewaifu • #delwaifu
 ┃ › _Eliminar un personaje reclamado._
-┃ ✿ `#favoritetop • #favtop`
+┃ ✿ #favoritetop • #favtop
 ┃ › _Ver el top de personajes favoritos._
-┃ ✿ `#gachainfo • #ginfo`
+┃ ✿ #gachainfo • #ginfo
 ┃ › _Ver tu información de gacha._
-┃ ✿ `#giveallharem`
+┃ ✿ #giveallharem
 ┃ › _Regalar todos tus personajes a otro usuario._
-┃ ✿ `#givechar • #givewaifu`
+┃ ✿ #givechar • #givewaifu
 ┃ › _Regalar un personaje a otro usuario._
-┃ ✿ `#robwaifu • #robarwaifu`
+┃ ✿ #robwaifu • #robarwaifu
 ┃ › _Robar un personaje a otro usuario._
-┃ ✿ `#harem • #waifus • #claims`
+┃ ✿ #harem • #waifus • #claims
 ┃ › _Ver tus personajes reclamados._
-┃ ✿ `#haremshop • #tiendawaifus`
+┃ ✿ #haremshop • #tiendawaifus
 ┃ › _Ver los personajes en venta._
-┃ ✿ `#removesale • #removerventa`
+┃ ✿ #removesale • #removerventa
 ┃ › _Eliminar un personaje en venta._
-┃ ✿ `#rollwaifu • #rw • #roll`
+┃ ✿ #rollwaifu • #rw • #roll
 ┃ › _Waifu o husbando aleatorio._
-┃ ✿ `#sell • #vender`
+┃ ✿ #sell • #vender
 ┃ › _Poner un personaje a la venta._
-┃ ✿ `#serieinfo • #ainfo`
+┃ ✿ #serieinfo • #ainfo
 ┃ › _Información de un anime._
-┃ ✿ `#serielist • #slist`
+┃ ✿ #serielist • #slist
 ┃ › _Listar series del bot._
-┃ ✿ `#setclaimmsg • #setclaim`
+┃ ✿ #setclaimmsg • #setclaim
 ┃ › _Modificar el mensaje al reclamar un personaje._
-┃ ✿ `#trade • #intercambiar`
+┃ ✿ #trade • #intercambiar
 ┃ › _Intercambiar un personaje con otro usuario._
-┃ ✿ `#vote • #votar`
+┃ ✿ #vote • #votar
 ┃ › _Votar por un personaje para subir su valor._
-┃ ✿ `#waifusboard • #wtop`
+┃ ✿ #waifusboard • #wtop
 ┃ › _Ver el top de personajes con mayor valor._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ SOCKETS* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ SOCKETS*.
 ┃
-┃ ✿ `#qr • #code`
+┃ ✿ #qr • #code
 ┃ › _Crear un Sub-Bot con un código QR/Code._
-┃ ✿ `#setname • #setbanner`
+┃ ✿ #setname • #setbanner
 ┃ › _Personaliza el nombre/banner de tu Sub-Bot._
-┃ ✿ `#bots • #botlist`
+┃ ✿ #bots • #botlist
 ┃ › _Ver el número de bots activos._
-┃ ✿ `#status • #estado`
+┃ ✿ #status • #estado
 ┃ › _Ver estado del bot._
-┃ ✿ `#p • #ping`
+┃ ✿ #p • #ping
 ┃ › _Medir tiempo de respuesta._
-┃ ✿ `#join`
+┃ ✿ #join
 ┃ › _Unir al bot a un grupo._
-┃ ✿ `#leave • #salir`
+┃ ✿ #leave • #salir
 ┃ › _Salir de un grupo._
-┃ ✿ `#logout`
+┃ ✿ #logout
 ┃ › _Cerrar sesión del bot._
-┃ ✿ `#setpfp • #setimage`
+┃ ✿ #setpfp • #setimage
 ┃ › _Cambiar la imagen de perfil._
-┃ ✿ `#setstatus`
+┃ ✿ #setstatus
 ┃ › _Cambiar el estado del bot._
-┃ ✿ `#setusername`
+┃ ✿ #setusername
 ┃ › _Cambiar el nombre de usuario._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ UTILIDADES* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ UTILIDADES*.
 ┃
-┃ ✿ `#help • #menu`
+┃ ✿ #help • #menu
 ┃ › _Ver el menú de comandos._
-┃ ✿ `#sc • #script`
+┃ ✿ #sc • #script
 ┃ › _Link del repositorio oficial del Bot._
-┃ ✿ `#sug • #suggest`
+┃ ✿ #sug • #suggest
 ┃ › _Sugerir nuevas funciones al desarrollador._
-┃ ✿ `#reporte • #reportar`
+┃ ✿ #reporte • #reportar
 ┃ › _Reportar fallas o problemas del bot._
-┃ ✿ `#calcular • #cal`
+┃ ✿ #calcular • #cal
 ┃ › _Calcular tipos de ecuaciones._
-┃ ✿ `#delmeta`
+┃ ✿ #delmeta
 ┃ › _Restablecer el pack y autor por defecto para tus stickers._
-┃ ✿ `#getpic • #pfp`
+┃ ✿ #getpic • #pfp
 ┃ › _Ver la foto de perfil de un usuario._
-┃ ✿ `#say`
+┃ ✿ #say
 ┃ › _Repetir un mensaje._
-┃ ✿ `#setmeta`
+┃ ✿ #setmeta
 ┃ › _Establecer el pack y autor por defecto para tus stickers._
-┃ ✿ `#sticker • #s • #wm`
+┃ ✿ #sticker • #s • #wm
 ┃ › _Convertir una imagen/video a sticker._
-┃ ✿ `#toimg • #img`
+┃ ✿ #toimg • #img
 ┃ › _Convertir un sticker/imagen a imagen._
-┃ ✿ `#brat • #bratv • #qc`
+┃ ✿ #brat • #bratv • #qc
 ┃ › _Crear stickers con texto._
-┃ ✿ `#gitclone`
+┃ ✿ #gitclone
 ┃ › _Descargar un repositorio de Github._
-┃ ✿ `#enhance • #remini • #hd`
+┃ ✿ #enhance • #remini • #hd
 ┃ › _Mejorar calidad de una imagen._
-┃ ✿ `#letra • #style`
+┃ ✿ #letra • #style
 ┃ › _Cambiar la fuente de las letras._
-┃ ✿ `#read • #readviewonce`
+┃ ✿ #read • #readviewonce
 ┃ › _Ver imágenes viewonce._
-┃ ✿ `#ss • #ssweb`
+┃ ✿ #ss • #ssweb
 ┃ › _Ver el estado de una página web._
-┃ ✿ `#translate • #traducir`
+┃ ✿ #translate • #traducir
 ┃ › _Traducir palabras en otros idiomas._
-┃ ✿ `#ia • #gemini`
+┃ ✿ #ia • #gemini
 ┃ › _Preguntar a Chatgpt._
-┃ ✿ `#iavoz • #aivoz`
+┃ ✿ #iavoz • #aivoz
 ┃ › _Hablar o preguntar a chatgpt mexicano modo voz._
-┃ ✿ `#tourl • #catbox`
+┃ ✿ #tourl • #catbox
 ┃ › _Convertidor de imagen/video en urls._
-┃ ✿ `#wiki • #wikipedia`
+┃ ✿ #wiki • #wikipedia
 ┃ › _Investigar temas a través de Wikipedia._
-┃ ✿ `#dalle • #flux`
+┃ ✿ #dalle • #flux
 ┃ › _Crear imágenes con texto mediante IA._
-┃ ✿ `#npmdl • #npmjs`
+┃ ✿ #npmdl • #npmjs
 ┃ › _Descargar paquetes de NPMJS._
-┃ ✿ `#google`
+┃ ✿ #google
 ┃ › _Realizar búsquedas por Google._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ PERFILES* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ PERFILES*.
 ┃
-┃ ✿ `#leaderboard • #lboard • #top`
+┃ ✿ #leaderboard • #lboard • #top
 ┃ › _Top de usuarios con más experiencia._
-┃ ✿ `#level • #lvl`
+┃ ✿ #level • #lvl
 ┃ › _Ver tu nivel y experiencia actual._
-┃ ✿ `#marry • #casarse`
+┃ ✿ #marry • #casarse
 ┃ › _Casarte con alguien._
 ┃ ✿ `#profile`
 ┃ › _Ver tu perfil._
-┃ ✿ `#setbirth`
+┃ ✿ #setbirth
 ┃ › _Establecer tu fecha de cumpleaños._
-┃ ✿ `#setdescription • #setdesc`
+┃ ✿ #setdescription • #setdesc
 ┃ › _Establecer tu descripción._
-┃ ✿ `#setgenre`
+┃ ✿ #setgenre
 ┃ › _Establecer tu género._
-┃ ✿ `#delgenre • #delgenero`
+┃ ✿ #delgenre • #delgenero
 ┃ › _Eliminar tu género._
-┃ ✿ `#delbirth`
+┃ ✿ #delbirth
 ┃ › _Borrar tu fecha de cumpleaños._
-┃ ✿ `#divorce`
+┃ ✿ #divorce
 ┃ › _Divorciarte de tu pareja._
-┃ ✿ `#setfavourite • #setfav`
+┃ ✿ #setfavourite • #setfav
 ┃ › _Establecer tu claim favorito._
-┃ ✿ `#deldescription • #deldesc`
+┃ ✿ #deldescription • #deldesc
 ┃ › _Eliminar tu descripción._
-┃ ✿ `#prem • #vip`
+┃ ✿ #prem • #vip
 ┃ › _Comprar membresía premium._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ GRUPOS* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ GRUPOS*.
 ┃
-┃ ✿ `#tag • #hidetag • #invocar`
+┃ ✿ #tag • #hidetag • #invocar
 ┃ › _Envía un mensaje mencionando a todos._
-┃ ✿ `#detect • #alertas`
+┃ ✿ #detect • #alertas
 ┃ › _Activar/desactivar las alertas de promote/demote._
-┃ ✿ `#antilink • #antienlace`
+┃ ✿ #antilink • #antienlace
 ┃ › _Activar/desactivar el antienlace._
-┃ ✿ `#bot`
+┃ ✿ #bot
 ┃ › _Activar/desactivar al bot._
-┃ ✿ `#close • #cerrar`
+┃ ✿ #close • #cerrar
 ┃ › _Cerrar el grupo para solo administradores._
-┃ ✿ `#demote`
-┃ › _Descender a un usuario de administrador._
-┃ ✿ `#economy`
+┃ ✿ #demote
+┃ › _Descender a unusuario de administrador._
+┃ ✿ #economy
 ┃ › _Activar/desactivar los comandos de economía._
-┃ ✿ `#gacha`
+┃ ✿ #gacha
 ┃ › _Activar/desactivar los comandos de Gacha y Games._
-┃ ✿ `#welcome • #bienvenida`
+┃ ✿ #welcome • #bienvenida
 ┃ › _Activar/desactivar la bienvenida y despedida._
-┃ ✿ `#setbye`
+┃ ✿ #setbye
 ┃ › _Establecer un mensaje de despedida personalizado._
-┃ ✿ `#setprimary`
+┃ ✿ #setprimary
 ┃ › _Establece un bot como primario del grupo._
-┃ ✿ `#setwelcome`
+┃ ✿ #setwelcome
 ┃ › _Establecer un mensaje de bienvenida personalizado._
-┃ ✿ `#kick`
+┃ ✿ #kick
 ┃ › _Expulsar a un usuario del grupo._
-┃ ✿ `#nsfw`
+┃ ✿ #nsfw
 ┃ › _Activar/desactivar los comandos NSFW._
-┃ ✿ `#onlyadmin`
+┃ ✿ #onlyadmin
 ┃ › _Permitir que solo los administradores usen comandos._
-┃ ✿ `#open • #abrir`
+┃ ✿ #open • #abrir
 ┃ › _Abrir el grupo para que todos envíen mensajes._
-┃ ✿ `#promote`
+┃ ✿ #promote
 ┃ › _Ascender a un usuario a administrador._
-┃ ✿ `#add • #añadir • #agregar`
+┃ ✿ #add • #añadir • #agregar
 ┃ › _Invita a un usuario a tu grupo._
-┃ ✿ `admins • admin`
+┃ ✿ admins • admin
 ┃ › _Mencionar a los admins para solicitar ayuda._
-┃ ✿ `#restablecer • #revoke`
+┃ ✿ #restablecer • #revoke
 ┃ › _Restablecer enlace del grupo._
-┃ ✿ `#addwarn • #warn`
+┃ ✿ #addwarn • #warn
 ┃ › _Advertir a un usuario._
-┃ ✿ `#unwarn • #delwarn`
+┃ ✿ #unwarn • #delwarn
 ┃ › _Quitar advertencias de un usuario._
-┃ ✿ `#advlist • #listadv`
+┃ ✿ #advlist • #listadv
 ┃ › _Ver lista de usuarios advertidos._
-┃ ✿ `#inactivos • #kickinactivos`
+┃ ✿ #inactivos • #kickinactivos
 ┃ › _Ver y eliminar a usuarios inactivos._
-┃ ✿ `#listnum • #kicknum`
+┃ ✿ #listnum • #kicknum
 ┃ › _Eliminar usuarios con prefijo de país._
-┃ ✿ `#gpbanner • #groupimg`
+┃ ✿ #gpbanner • #groupimg
 ┃ › _Cambiar la imagen del grupo._
-┃ ✿ `#gpname • #groupname`
+┃ ✿ #gpname • #groupname
 ┃ › _Cambiar el nombre del grupo._
-┃ ✿ `#gpdesc • #groupdesc`
+┃ ✿ #gpdesc • #groupdesc
 ┃ › _Cambiar la descripción del grupo._
-┃ ✿ `#del • #delete`
+┃ ✿ #del • #delete
 ┃ › _Eliminar un mensaje._
-┃ ✿ `#linea • #listonline`
+┃ ✿ #linea • #listonline
 ┃ › _Ver lista de usuarios en línea._
-┃ ✿ `#gp • #infogrupo`
+┃ ✿ #gp • #infogrupo
 ┃ › _Ver la información del grupo._
-┃ ✿ `#link`
+┃ ✿ `#link
 ┃ › _Ver enlace de invitación del grupo._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ REACCIONES ANIME* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ REACCIONES ANIME*.
 ┃
-┃ ✿ `#angry • #enojado`
+┃ ✿ #angry • #enojado
 ┃ › _Estar enojado._
-┃ ✿ `#bath • #bañarse`
+┃ ✿ #bath • #bañarse
 ┃ › _Bañarse._
-┃ ✿ `#bite • #morder`
+┃ ✿ #bite • #morder
 ┃ › _Muerde a alguien._
-┃ ✿ `#bleh • #lengua`
+┃ ✿ #bleh • #lengua
 ┃ › _Sacar la lengua._
-┃ ✿ `#blush • #sonrojarse`
+┃ ✿ #blush • #sonrojarse
 ┃ › _Sonrojarte._
-┃ ✿ `#bored • #aburrido`
+┃ ✿ #bored • #aburrido
 ┃ › _Estar aburrido._
-┃ ✿ `#clap • #aplaudir`
+┃ ✿ #clap • #aplaudir
 ┃ › _Aplaudir._
-┃ ✿ `#coffee • #cafe`
+┃ ✿ #coffee • #cafe
 ┃ › _Tomar café._
-┃ ✿ `#cry • #llorar`
+┃ ✿ #cry • #llorar
 ┃ › _Llorar por algo o alguien._
-┃ ✿ `#cuddle • #acurrucarse`
+┃ ✿ #cuddle • #acurrucarse
 ┃ › _Acurrucarse._
 ┃ ✿ `#dance • #bailar`
 ┃ › _Sácate los pasitos prohibidos._
-┃ ✿ `#dramatic • #drama`
+┃ ✿ #dramatic • #drama
 ┃ › _Drama._
-┃ ✿ `#drunk • #borracho`
+┃ ✿ #drunk • #borracho
 ┃ › _Estar borracho._
-┃ ✿ `#eat • #comer`
+┃ ✿ #eat • #comer
 ┃ › _Comer algo delicioso._
-┃ ✿ `#facepalm • #palmada`
+┃ ✿ #facepalm • #palmada
 ┃ › _Darte una palmada en la cara._
-┃ ✿ `#happy • #feliz`
+┃ ✿ #happy • #feliz
 ┃ › _Salta de felicidad._
-┃ ✿ `#hug • #abrazar`
+┃ ✿ #hug • #abrazar
 ┃ › _Dar un abrazo._
-┃ ✿ `#impregnate • #preg`
+┃ ✿ #impregnate • #preg
 ┃ › _Embarazar a alguien._
-┃ ✿ `#kill • #matar`
+┃ ✿ #kill • #matar
 ┃ › _Toma tu arma y mata a alguien._
-┃ ✿ `#kiss • #muak`
+┃ ✿ #kiss • #muak
 ┃ › _Dar un beso._
-┃ ✿ `#kisscheek • #beso`
+┃ ✿ #kisscheek • #beso
 ┃ › _Beso en la mejilla._
-┃ ✿ `#laugh • #reirse`
+┃ ✿ #laugh • #reirse
 ┃ › _Reírte de algo o alguien._
-┃ ✿ `#lick • #lamer`
+┃ ✿ #lick • #lamer
 ┃ › _Lamer a alguien._
-┃ ✿ `#love • #amor`
+┃ ✿ #love • #amor
 ┃ › _Sentirse enamorado._
-┃ ✿ `#pat • #palmadita`
+┃ ✿ #pat • #palmadita
 ┃ › _Acaricia a alguien._
-┃ ✿ `#poke • #picar`
+┃ ✿ #poke • #picar
 ┃ › _Picar a alguien._
-┃ ✿ `#pout • #pucheros`
+┃ ✿ #pout • #pucheros
 ┃ › _Hacer pucheros._
-┃ ✿ `#punch • #pegar`
+┃ ✿ #punch • #pegar
 ┃ › _Dar un puñetazo._
-┃ ✿ `#run • #correr`
+┃ ✿ #run • #correr
 ┃ › _Correr._
-┃ ✿ `#sad • #triste`
+┃ ✿ #sad • #triste
 ┃ › _Expresar tristeza._
-┃ ✿ `#scared • #asustado`
+┃ ✿ #scared • #asustado
 ┃ › _Estar asustado._
-┃ ✿ `#seduce • #seducir`
+┃ ✿ #seduce • #seducir
 ┃ › _Seducir a alguien._
-┃ ✿ `#shy • #tímido`
+┃ ✿ #shy • #tímido
 ┃ › _Sentir timidez._
-┃ ✿ `#slap • #bofetada`
+┃ ✿ #slap • #bofetada
 ┃ › _Dar una bofetada._
-┃ ✿ `#sleep • #dormir`
+┃ ✿ #sleep • #dormir
 ┃ › _Tumbarte a dormir._
-┃ ✿ `#smoke • #fumar`
+┃ ✿ #smoke • #fumar
 ┃ › _Fumar._
-┃ ✿ `#spit • #escupir`
+┃ ✿ #spit • #escupir
 ┃ › _Escupir._
-┃ ✿ `#step • #pisar`
+┃ ✿ #step • #pisar
 ┃ › _Pisar a alguien._
-┃ ✿ `#think • #pensar`
+┃ ✿ #think • #pensar
 ┃ › _Pensar en algo._
-┃ ✿ `#walk • #caminar`
+┃ ✿ #walk • #caminar
 ┃ › _Caminar._
-┃ ✿ `#wink • #guiñar`
+┃ ✿ #wink • #guiñar
 ┃ › _Guiñar el ojo._
-┃ ✿ `#cringe • #avergonzarse`
+┃ ✿ #cringe • #avergonzarse
 ┃ › _Sentir vergüenza ajena._
-┃ ✿ `#smug • #presumir`
+┃ ✿ #smug • #presumir
 ┃ › _Presumir con estilo._
-┃ ✿ `#smile • #sonreír`
+┃ ✿ #smile • #sonreír
 ┃ › _Sonreír con ternura._
-┃ ✿ `#highfive • #5`
+┃ ✿ #highfive • #5
 ┃ › _Chocar los cinco._
-┃ ✿ `#bully • #bullying`
+┃ ✿ #bully • #bullying
 ┃ › _Molestar a alguien._
-┃ ✿ `#handhold • #mano`
+┃ ✿ #handhold • #mano
 ┃ › _Tomarse de la mano._
-┃ ✿ `#wave • #ola • #hola`
+┃ ✿ #wave • #ola • #hola
 ┃ › _Saludar con la mano._
-┃ ✿ `#waifu`
+┃ ✿ #waifu
 ┃ › _Buscar una waifu aleatoria._
-┃ ✿ `#ppcouple • #ppcp`
+┃ ✿ #ppcouple • #ppcp
 ┃ › _Genera imágenes para amistades o parejas._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*
 
 𐔌   .  ⋮ *✐ NSFW* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ NSFW*.
 ┃
-┃ ✿ `#danbooru • #dbooru`
+┃ ✿ #danbooru • #dbooru
 ┃ › _Buscar imágenes en Danbooru._
-┃ ✿ `#gelbooru • #gbooru`
+┃ ✿ #gelbooru • #gbooru
 ┃ › _Buscar imágenes en Gelbooru._
-┃ ✿ `#rule34 • #r34`
+┃ ✿ #rule34 • #r34
 ┃ › _Buscar imágenes en Rule34._
-┃ ✿ `#xvideos • #xvideosdl`
+┃ ✿ #xvideos • #xvideosdl
 ┃ › _Descargar un video Xvideos._
-┃ ✿ `#xnxx • #xnxxdl`
+┃ ✿ #xnxx • #xnxxdl
 ┃ › _Descargar un video Xnxx._
 *꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦︶꒷꒦*`.trim()
 await conn.sendMessage(m.chat, { 
