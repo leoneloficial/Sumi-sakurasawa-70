@@ -21,9 +21,9 @@ let txt = `̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮   ̮  
 𐔌   .  ⋮ *✐ ECONOMÍA* .ᐟ  ֹ   ₊ ꒱
 > ✿ Comandos de *✐ ECONOMÍA*.
 ┃
-┃ ✿ `#w • #work • #trabajar`
+┃ ✿ #w • #work • #trabajar
 ┃ › _Ganar coins trabajando._
-┃ ✿ `#slut • #prostitución`
+┃ ✿ #slut • #prostitución
 ┃ › _Ganar coins prostituyéndote._
 ┃ ✿ `#coinflip • #flip • #cf [cantidad]`
 ┃ › _Apostar coins en un cara o cruz._
