@@ -1,4 +1,3 @@
-
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 import './settings.js'
 import './plugins/_allfake.js'
