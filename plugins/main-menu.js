@@ -1,14 +1,12 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, args }) => {
-const botname = conn.botname || conn.botName
-const textbot = conn.textbot || global.textbot
 let mentionedJid = await m.mentionedJid
 let userId = mentionedJid && mentionedJid[0] ? mentionedJid[0] : m.sender
 let totalreg = Object.keys(global.db.data.users).length
 let totalCommands = Object.values(global.plugins).filter((v) => v.help && v.tags).length
 
-let txt = ` > ❀ hola! ${m.pushName}, Soy ${conn.botName}, Aquí tienes la lista de comandos.
+let txt = ` > ❀ hola! ${m.pushName}, Soy ${botname}, Aquí tienes la lista de comandos.
 
 *❀ canal oficial »* https://whatsapp.com/channel/0029Vagdmfv1SWt5nfdR4z3w
 
