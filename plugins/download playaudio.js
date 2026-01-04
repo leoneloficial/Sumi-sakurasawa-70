@@ -1,153 +1,90 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
+import yts from 'yt-search'
+import fetch from 'node-fetch'
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-  try {
-    if (!text?.trim())
-      return conn.reply(m.chat, `❀ Por favor, ingresa el nombre de la música a descargar.`, m)
+const handler = async (m, { conn, text, command }) => {
+try {
+if (!text) return conn.reply(m.chat, '❀ *Por favor, ingrese el título o enlace del video.*', m)
 
-    await m.react("🕒")
+await m.react('🕒')
 
-    const videoMatch = text.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([a-zA-Z0-9_-]{11})/
-    )
-    const query = videoMatch ? "https://youtu.be/" + videoMatch[1] : text
+const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([a-zA-Z0-9_-]{11})/)
+const query = videoMatch ? 'https://youtu.be/' + videoMatch[1] : text
+const search = await yts(query)
+const result = videoMatch ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all[0] : search.all[0]
 
-    const search = await yts(query)
-    const result = videoMatch
-      ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all?.[0]
-      : search.all?.[0]
+if (!result) throw '✰ *No se encontraron resultados.*'
 
-    if (!result) throw "ꕥ No se encontraron resultados."
+const { title, thumbnail, timestamp, views, url, author, seconds } = result
+if (seconds > 1800) throw '✰ *El contenido excede los 30 minutos.*'
 
-    const { title, thumbnail, url, author, seconds } = result
-    if (seconds > 2700) throw "⚠ El contenido supera el límite de duración (45 minutos)."
+const vistas = formatViews(views)
+const info = `❀ *Título* » ${title}\n` +
+             `❖ *Autor* » ${author.name}\n` +
+             `❏ *Duración* » ${timestamp} (${vistas} vistas)\n` +
+             `🜸 *Link* » ${url}`
 
-    const isAudio = command === "playaudio"
-    const isVideo = command === "playvideo"
+await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: info }, { quoted: m })
 
-    let media = null
-    if (isAudio) {
-      media = await getAud(url)
-      if (!media?.url) throw "⚠ No se pudo obtener el audio."
-    } else if (isVideo) {
-      media = await getVid(url)
-      if (!media?.url) throw "⚠ No se pudo obtener el video."
-    } else {
-      return
-    }
+const isAudio = ['play', 'yta', 'ytmp3', 'playaudio'].includes(command)
+const downloadUrl = isAudio ? await getAud(url) : await getVid(url)
 
-    const duracion = formatDuration(seconds)
-    const calidad = isVideo ? "360p" : "128kbps"
+if (!downloadUrl) throw '✰ *No se pudo obtener el enlace de descarga, intente nuevamente.*'
 
-    const info =
-      `「✦」Descargando *<${title}>*\n\n` +
-      `> ✐ Canal » *${author?.name || "Desconocido"}*\n` +
-      `> ⴵ Duracion » *${duracion}*\n` +
-      `> ✰ Calidad: *${calidad}*\n` +
-      `> ❒ API » *Adonix*\n` +
-      `> 🜸 Link » ${url}`
-
-    const thumb = (await conn.getFile(thumbnail)).data
-    await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
-
-    if (isAudio) {
-      const audioBuffer = await downloadBuffer(media.url)
-      if (!audioBuffer) throw "⚠ No se pudo descargar el audio (buffer)."
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: audioBuffer,
-          mimetype: "audio/mpeg",
-          fileName: `${title}.mp3`,
-          ptt: true
-        },
-        { quoted: m }
-      )
-
-      await m.react("✔️")
-      return
-    }
-
-    if (isVideo) {
-      await conn.sendMessage(
-        m.chat,
-        { video: { url: media.url }, mimetype: "video/mp4", caption: "" },
-        { quoted: m }
-      )
-      await m.react("✔️")
-      return
-    }
-  } catch (e) {
-    await m.react("✖️")
-    return conn.reply(
-      m.chat,
-      typeof e === "string"
-        ? e
-        : "⚠︎ Se ha producido un problema.\n> Usa *" +
-            usedPrefix +
-            "report* para informarlo.\n\n" +
-            (e?.message || e),
-      m
-    )
-  }
+if (isAudio) {
+    await conn.sendMessage(m.chat, { audio: { url: downloadUrl }, mimetype: 'audio/mpeg', ptt: false }, { quoted: m })
+} else {
+    await conn.sendMessage(m.chat, { video: { url: downloadUrl }, caption: `❀ *Archivo completado*`, fileName: `${title}.mp4`, mimetype: 'video/mp4' }, { quoted: m })
 }
 
-handler.command = handler.help = ["playaudio", "playvideo"]
-handler.tags = ["descargas"]
+await m.react('✅')
+
+} catch (e) {
+console.error(e)
+await m.react('✖️')
+return conn.reply(m.chat, `❀ *Ocurrió un error:*\n✰ ${e.message || e}`, m)
+}
+}
+
+handler.command = ['play', 'yta', 'ytmp3', 'play2', 'ytv', 'ytmp4', 'playaudio', 'mp4']
+handler.tags = ['download']
 handler.group = true
 
 export default handler
 
 async function getAud(url) {
-  const endpoint = `${global.APIs.adonix.url}/download/ytaudio?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(
-    url
-  )}`
-  const res = await fetchJson(endpoint)
-  const link = res?.data?.url
-  return link ? { url: link, api: "Adonix" } : null
+try {
+if (global.APIs?.adonix) {
+     const endpoint = `${global.APIs.adonix.url}/download/ytaudio?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(url)}`
+     const res = await fetch(endpoint).then(r => r.json())
+     if (res.data?.url) return res.data.url
+}
+const fallback = await fetch(`https://api.agatz.xyz/api/ytmp3?url=${encodeURIComponent(url)}`)
+const json = await fallback.json()
+return json.data?.downloadUrl || json.result?.download?.url || null
+} catch {
+return null
+}
 }
 
 async function getVid(url) {
-  const endpoint = `${global.APIs.adonix.url}/download/ytvideo?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(
-    url
-  )}`
-  const res = await fetchJson(endpoint)
-  const link = res?.data?.url
-  return link ? { url: link, api: "Adonix" } : null
+try {
+if (global.APIs?.adonix) {
+    const endpoint = `${global.APIs.adonix.url}/download/ytvideo?apikey=${global.APIs.adonix.key}&url=${encodeURIComponent(url)}`
+    const res = await fetch(endpoint).then(r => r.json())
+    if (res.data?.url) return res.data.url
+}
+const fallback = await fetch(`https://api.agatz.xyz/api/ytmp4?url=${encodeURIComponent(url)}`)
+const json = await fallback.json()
+return json.data?.downloadUrl || json.result?.download?.url || null
+} catch {
+return null
+}
 }
 
-async function fetchJson(url) {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 15000)
-  try {
-    const r = await fetch(url, { signal: controller.signal })
-    return await r.json()
-  } finally {
-    clearTimeout(timeout)
-  }
-}
-
-async function downloadBuffer(fileUrl) {
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 60000)
-    const r = await fetch(fileUrl, { signal: controller.signal })
-    if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    const ab = await r.arrayBuffer()
-    clearTimeout(timeout)
-    return Buffer.from(ab)
-  } catch {
-    return null
-  }
-}
-
-function formatDuration(totalSeconds) {
-  if (!Number.isFinite(totalSeconds)) return "No disponible"
-  const h = Math.floor(totalSeconds / 3600)
-  const m = Math.floor((totalSeconds % 3600) / 60)
-  const s = Math.floor(totalSeconds % 60)
-  if (h > 0) return `${h} horas ${m} minutos ${s} segundos`
-  return `${m} minutos ${s} segundos`
+function formatViews(views) {
+if (!views) return "N/A"
+if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`
+if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`
+if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k`
+return views.toString()
 }
