@@ -11,8 +11,8 @@ global.botNumber = "" //Ejemplo: 573218138672
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.owner = ["393715279301", "50495351584", "50558124470", "559296077349", "50493732693"]
-global.suittag = ["573196588149"] 
+global.owner = ["393715279301", "393715279301", "393715279301"]
+global.suittag = ["393715279301"] 
 global.prems = []
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
@@ -25,21 +25,21 @@ global.yukiJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.botname = "❤️̶۫̄͟Ⓢ︎𓏲S͟u͟m͟m͟i͟𓍲̈͜𝗨̴ᥣ̥𝗍̈rᥲ̄𓊓̵̬𝐁o̸t̸❤️̶۫̄͟─"
-global.textbot = "${conn.botName}, mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𓆩‌۫᷼ ִֶָღ݉͢ᥣᥱ᥆ᥒᥱᥣ.𓆪‌‹࣭݊𓂃ⷪ ִֶָ ᷫ‹ ⷭ.࣭𓆩‌۫᷼Ⴕ۫͜𓆪‌"
-global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𓆩‌۫᷼ ִֶָღ݉͢ᥣᥱ᥆ᥒᥱᥣ.𓆪‌‹࣭݊𓂃ⷪ ִֶָ ᷫ‹ ⷭ.࣭𓆩‌۫᷼Ⴕ۫͜𓆪‌"
-global.author = "© mᥲძᥱ ᥕі𝗍һ ᑲᥡ 𓆩‌۫᷼ ִֶָღ݉͢ᥣᥱ᥆ᥒᥱᥣ.𓆪‌‹࣭݊𓂃ⷪ ִֶָ ᷫ‹ ⷭ.࣭𓆩‌۫᷼Ⴕ۫͜𓆪‌"
-global.etiqueta = "𓆩‌۫᷼ ִֶָღ݉͢ᥣᥱ᥆ᥒᥱᥣ.𓆪‌‹࣭݊𓂃ⷪ ִֶָ ᷫ‹ ⷭ.࣭𓆩‌۫᷼Ⴕ۫͜𓆪‌"
+global.botname = " ✿ sumi sakurasawa ✿ "
+global.textbot = ""
+global.dev = ""
+global.author = ""
+global.etiqueta = ""
 global.currency = "¥enes"
-global.banner = "https://raw.githubusercontent.com/edar123/im/main/media/leo.jpg"
-global.icono = "https://raw.githubusercontent.com/edar123/im/main/media/leo2.jpg"
+global.banner = "https://files.catbox.moe/7clohd.jpg"
+global.icono = "https://files.catbox.moe/7clohd.jpg"
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.group = "https://chat.whatsapp.com/HaKf6ezcwdbGzmH782eBal"
 global.community = "https://chat.whatsapp.com/G0kXqsteJFU74yrLtg79o6"
-global.channel = "https://whatsapp.com/channel/0029VbAc6cS002TEZ4r5261E"
+global.channel = "https://whatsapp.com/channel/0029Vb64nWqLo4hb8cuxe23n"
 global.github = "https://github.com/The-King-Destroy/YukiBot-MD"
 global.gmail = "thekingdestroy507@gmail.com"
 global.ch = {
@@ -55,7 +55,7 @@ vreden: { url: "https://api.vreden.web.id", key: null },
 delirius: { url: "https://api.delirius.store", key: null },
 zenzxz: { url: "https://api.zenzxz.my.id", key: null },
 siputzx: { url: "https://api.siputzx.my.id", key: null },
-adonix: { url: "https://api-adonix.ultraplus.click", key: 'Leonel' }
+adonix: { url: "https://api-adonix.ultraplus.click", key: 'Yuki-WaBot' }
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
