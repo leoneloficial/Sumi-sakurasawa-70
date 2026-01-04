@@ -1,87 +1,88 @@
-import fs from 'fs';  
-import path from 'path';  
-import fetch from "node-fetch";
-import crypto from "crypto";
-import { FormData, Blob } from "formdata-node";
-import { fileTypeFromBuffer } from "file-type";
 
-let handler = async (m, { conn, isRowner }) => {
+import fs from 'fs'
+import path from 'path'
+import axios from 'axios'
+import FormData from 'form-data'
+import { fileTypeFromBuffer } from 'file-type'
 
-  if (!m.quoted || !/image/.test(m.quoted.mimetype)) return m.reply(`${emoji} Por favor, responde a una imagen con el comando *setbanner* para actualizar la foto del menu.`);
+async function uploadToFreeImageHost(buffer) {
+  try {
+    const form = new FormData()
+    form.append('source', buffer, 'file')
+    const res = await axios.post('https://freeimage.host/api/1/upload', form, {
+      params: {
+        key: '6d207e02198a847aa98d0a2a901485a5'
+      },
+      headers: form.getHeaders()
+    })
+    return res.data.image.url
+  } catch (err) {
+    console.error('Error FreeImageHost:', err?.response?.data || err.message)
+    return null
+  }
+}
+
+const handler = async (m, { conn, command, text, usedPrefix }) => {
+  const senderNumber = m.sender.replace(/[^0-9]/g, '')
+  const botPath = path.join('./Sessions/SubBot', senderNumber)
+  const configPath = path.join(botPath, 'config.json')
+
+  if (!fs.existsSync(botPath)) {
+    return m.reply(`✿ *Acceso denegado.*\n\n✎ *Este comando es exclusivo para usuarios con SubBots activos.*`)
+  }
+
+  let config = {}
+  if (fs.existsSync(configPath)) {
+    try {
+      config = JSON.parse(fs.readFileSync(configPath))
+    } catch (e) {
+      config = {}
+    }
+  }
 
   try {
+    if (command === 'setname') {
+      if (!text) return m.reply(`✿ *Configuración de Nombre.*\n\n✎ *Uso correcto:* ${usedPrefix + command} Nuevo Nombre\n↺ *Ejemplo:* ${usedPrefix + command} MiBot Pro`)
 
-    const media = await m.quoted.download();
-    let link = await catbox(media);
+      config.name = text.trim()
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
 
-    if (!isImageValid(media)) {
-      return m.reply(`${emoji2} El archivo enviado no es una imagen válida.`);
+      return m.reply(`✿ *Nombre actualizado correctamente.*\n\n✎ *Nuevo nombre:* ${text.trim()}\n↺ *El cambio se reflejará inmediatamente.*`)
     }
 
-    global.banner = `${link}`;  
+    if (command === 'setbanner') {
+      const q = m.quoted || m
+      const mime = (q.msg || q).mimetype || q.mediaType || ''
 
-    await conn.sendFile(m.chat, media, 'banner.jpg', `${emoji} Banner actualizado.`, m);
+      if (!mime || !/image\/(jpe?g|png|webp)/.test(mime)) {
+        return m.reply(`✿ *Configuración de Banner.*\n\n✎ *Por favor, responde a una imagen con:* ${usedPrefix + command}\n↺ *Formatos aceptados:* JPG, PNG, WEBP.`)
+      }
 
-  } catch (error) {
-    console.error(error);
-    m.reply(`${msm} Hubo un error al intentar cambiar el banner.`);
+      await conn.sendMessage(m.chat, { react: { text: '🕓', key: m.key } })
+
+      const media = await q.download()
+      if (!media) throw new Error('No se pudo descargar la imagen.')
+
+      const uploadedUrl = await uploadToFreeImageHost(media)
+      if (!uploadedUrl) throw new Error('Error al subir la imagen a FreeImageHost.')
+
+      config.banner = uploadedUrl
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+
+      await conn.sendMessage(m.chat, { react: { text: '✔️', key: m.key } })
+
+      return m.reply(`✿ *Banner actualizado correctamente.*\n\n✎ *Imagen vinculada:* ${uploadedUrl}\n↺ *Tu bot ahora mostrará esta imagen.*`)
+    }
+
+  } catch (err) {
+    console.error(err)
+    await conn.sendMessage(m.chat, { react: { text: '✖️', key: m.key } })
+    return m.reply(`✿ *Ocurrió un error.*\n\n✎ *Detalle:* No se pudo guardar la configuración.\n↺ *Inténtalo de nuevo más tarde.*`)
   }
-};
-
-
-const isImageValid = (buffer) => {
-  const magicBytes = buffer.slice(0, 4).toString('hex');
-
-
-  if (magicBytes === 'ffd8ffe0' || magicBytes === 'ffd8ffe1' || magicBytes === 'ffd8ffe2') {
-    return true;
-  }
-
-
-  if (magicBytes === '89504e47') {
-    return true;
-  }
-
-
-  if (magicBytes === '47494638') {
-    return true;
-  }
-
-  return false; 
-};
-
-handler.help = ['setbanner'];
-handler.tags = ['tools'];
-handler.command = ['setbanner'];
-handler.rowner = true;
-
-export default handler;
-
-function formatBytes(bytes) {
-  if (bytes === 0) {
-    return "0 B";
-  }
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** i).toFixed(2)} ${sizes[i]}`;
 }
 
-async function catbox(content) {
-  const { ext, mime } = (await fileTypeFromBuffer(content)) || {};
-  const blob = new Blob([content.toArrayBuffer()], { type: mime });
-  const formData = new FormData();
-  const randomBytes = crypto.randomBytes(5).toString("hex");
-  formData.append("reqtype", "fileupload");
-  formData.append("fileToUpload", blob, randomBytes + "." + ext);
+handler.help = ['setname', 'setbanner']
+handler.tags = ['socket']
+handler.command = ['setname', 'setbanner']
 
-  const response = await fetch("https://catbox.moe/user/api.php", {
-    method: "POST",
-    body: formData,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36",
-    },
-  });
-
-  return await response.text();
-}
+export default handler
