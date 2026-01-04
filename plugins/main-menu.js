@@ -464,7 +464,7 @@ body: textbot,
 mediaType: 1,
 mediaUrl: redes,
 sourceUrl: redes,
-thumbnail: await (await fetch(banner)).buffer(),
+thumbnail: await (await fetch(conn.botBanner)).buffer(),,
 showAdAttribution: false,
 containsAutoReply: true,
 renderLargerThumbnail: true
