@@ -1,84 +1,77 @@
-import acrcloud from "acrcloud"
-import fetch from "node-fetch"
+import acrcloud from "acrcloud";
 
 const acr = new acrcloud({
-  host: "identify-ap-southeast-1.acrcloud.com",
-  access_key: "ee1b81b47cf98cd73a0072a761558ab1",
-  access_secret: "ya9OPe8onFAnNkyf9xMTK8qRyMGmsghfuHrIMmUI"
-})
+   host: "identify-ap-southeast-1.acrcloud.com",
+   access_key: "ee1b81b47cf98cd73a0072a761558ab1",
+   access_secret: "ya9OPe8onFAnNkyf9xMTK8qRyMGmsghfuHrIMmUI",
+});
 
-let handler = async (m, { conn, usedPrefix, command }) => {
-  const media = m.quoted || m;
-  const mime = (media.msg || media).mimetype || '';
-  const isVideo = media.mtype === 'videoMessage';
-  const isAudio = mime.includes('audio');
-
-  if (!isVideo && !isAudio)
-    return m.reply(`「✦」Por favor, responde a un *audio* o adjunta un *video corto* junto con el comando: \`${usedPrefix + command}\``);
-
-  try {
-    m.react('🎵');
-    const buffer = await media.download();
-    const data = await recognizeSong(buffer);
-
-    if (!data.length)
-      return m.reply(`${e} No se pudo identificar la canción. Intenta con otra parte del audio.`);
-
-    let caption = `「✦」 *Resultado de búsqueda musical*\n\n`;
-    for (const song of data) {
-      caption += `✐ *Título:* ${song.title}\n`;
-      caption += `✦ *Artista:* ${song.artist}\n`;
-      caption += `ⴵ *Duración:* ${song.duration}\n`;
-      if (song.url.length) {
-        caption += `🜸 *Enlaces:* ${song.url.join("\n")}\n`;
+let handler = async(m, { conn, text }) => {
+      let q = m.quoted ? m.quoted : m;
+      if (!q.mimetype || !q.mimetype.includes("audio")) {
+         return m.reply("🌷 Responde al audio del cual deseas buscar el título. Si es un vídeo, conviertelo a audio usando : #tomp3");
       }
-      caption += "\n";
-    }
+      m.react('⌛')
+      let buffer = await q.download();
+      try {
+         let data = await whatmusic(buffer);
+         if (!data.length) return m.reply("No se encontraron datos de la canción")
 
-    await conn.sendMessage(m.chat, {
-      text: caption.trim(),
-      contextInfo: {
-        externalAdReply: {
-          title: '✧ Whats • Music ✧',
-          body: dev,
-          thumbnail: await (await fetch('https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1742781294508.jpeg')).buffer(),
-          thumbnailUrl: redes,
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          sourceUrl: redes
-        }
+         let cap = "      乂 \`S H A Z A M\`\n\n";
+         for (let result of data) {
+            cap += `   ◦  🌴 \`Título :\` ${result.title}\n`;
+            cap += `   ◦  🌿 \`Artista :\` ${result.artist}\n`;
+            cap += `   ◦  🌱 \`Duración :\` ${result.duration}\n`;
+            cap += `   ◦  🌾 \`Fuentes :\` ${result.url.filter(x => x).map(i => `\n${i}`).join("\n")}\n\n`;
+         }
+conn.relayMessage(m.chat, {
+extendedTextMessage:{
+                text: cap + footer, 
+                contextInfo: {
+                mentionedJid: conn.parseMention(cap),
+                externalAdReply: {
+                        title: wm,
+                        mediaType: 1,
+                        previewType: 0,
+                        renderLargerThumbnail: true,
+                        thumbnail: await (await fetch(menu)).buffer(),
+                        sourceUrl: ''
+                    }
+                }
+}}, { quoted: m })
+         m.react('🌱')
+      } catch (error) {
+         console.error(error);
+         m.reply("Ocurrió un error al identificar la música. Inténtalo nuevamente.")
       }
-    }, { quoted: m });
+   }
+handler.command = ["whatmusic", "shazam"]
+handler.help = ["whatmusic"]
+handler.tags = ["tools"]
+export default handler
 
-    m.react('✅');
-  } catch (err) {
-    console.error(err);
-    m.reply(`Ocurrió un error al analizar el archivo. Intenta con otro audio/video.`);
-  }
-};
+async function whatmusic(buffer) {
+   let data = (await acr.identify(buffer)).metadata;
+   if (!data.music) return [];
 
-handler.command = ["whatmusic", "quemusica", "shazam"];
-handler.group = true;
-export default handler;
-async function recognizeSong(buffer) {
-  const result = await acr.identify(buffer);
-  const musicList = result?.metadata?.music;
-  if (!musicList?.length) return [];
-
-  return musicList.map(track => ({
-    title: track.title,
-    artist: track.artists?.[0]?.name || "Desconocido",
-    duration: msToTime(track.duration_ms),
-    url: [
-      track.external_metadata?.youtube?.vid ? `https://youtu.be/${track.external_metadata.youtube.vid}` : null,
-      track.external_metadata?.deezer?.track?.id ? `https://www.deezer.com/track/${track.external_metadata.deezer.track.id}` : null,
-      track.external_metadata?.spotify?.track?.id ? `https://open.spotify.com/track/${track.external_metadata.spotify.track.id}` : null
-    ].filter(Boolean)
-  }))
+   return data.music.map(a => ({
+      title: a.title,
+      artist: a.artists[0].name,
+      duration: toTime(a.duration_ms),
+      url: Object.keys(a.external_metadata).map(i =>
+         i === "youtube"
+            ? "https://youtu.be/" + a.external_metadata[i].vid
+            : i === "deezer"
+               ? "https://www.deezer.com/us/track/" + a.external_metadata[i].track.id
+               : i === "spotify"
+                  ? "https://open.spotify.com/track/" + a.external_metadata[i].track.id
+                  : ""
+      ),
+   }));
 }
 
-function msToTime(ms) {
-  let minutes = Math.floor(ms / 60000);
-  let seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+function toTime(ms) {
+   let m = Math.floor(ms / 60000) % 60;
+   let s = Math.floor(ms / 1000) % 60;
+   return [m, s].map(v => v.toString().padStart(2, "0")).join(":");
 }
