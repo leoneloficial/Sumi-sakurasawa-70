@@ -22,7 +22,7 @@ let name = await (async () => {
   } catch {}
   return jid.split("@")[0];
 })();
-text += `✰ ${startIndex + i + 1} » *${name}:*\n`
+text += `⏤͟͟͞͞❥ ${startIndex + i + 1} » *${name}:*\n`
 text += `\t\t Total→ *¥${total.toLocaleString()} ${currency}*\n`
 }
 text += `\n> • Página *${page}* de *${totalPages}*`
