@@ -23,8 +23,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const { title, thumbnail, url, author, seconds } = result
     if (seconds > 2700) throw "⚠ El contenido supera el límite de duración (45 minutos)."
 
-    const isAudio = command === "playaudio"
-    const isVideo = command === "playvideo"
+    const isAudio = ["play", "yta", "ytmp3", "playaudio"].includes(command)
+    const isVideo = ["play2", "ytv", "ytmp4", "mp4"].includes(command)
 
     let media = null
     if (isAudio) {
@@ -33,12 +33,11 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     } else if (isVideo) {
       media = await getVid(url)
       if (!media?.url) throw "⚠ No se pudo obtener el video."
-    } else {
-      return
     }
 
     const duracion = formatDuration(seconds)
     const calidad = isVideo ? "360p" : "128kbps"
+    const tamano = media?.url ? await getRemoteSize(media.url) : "No disponible"
 
     const info =
       `「✦」Descargando *<${title}>*\n\n` +
@@ -52,30 +51,47 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
 
     if (isAudio) {
-      const audioBuffer = await downloadBuffer(media.url)
-      if (!audioBuffer) throw "⚠ No se pudo descargar el audio (buffer)."
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: audioBuffer,
-          mimetype: "audio/mpeg",
-          fileName: `${title}.mp3`,
-          ptt: true
-        },
-        { quoted: m }
-      )
-
+      if (command === "ytmp3") {
+        await conn.sendMessage(
+          m.chat,
+          { audio: { url: media.url }, fileName: `${title}.mp3`, mimetype: "audio/mpeg" },
+          { quoted: m }
+        )
+      } else {
+        await conn.sendMessage(
+          m.chat,
+          {
+            document: { url: media.url },
+            fileName: `${title}.mp3`,
+            mimetype: "audio/mpeg",
+            caption: ``
+          },
+          { quoted: m }
+        )
+      }
       await m.react("✔️")
       return
     }
 
     if (isVideo) {
-      await conn.sendMessage(
-        m.chat,
-        { video: { url: media.url }, mimetype: "video/mp4", caption: "" },
-        { quoted: m }
-      )
+      if (command === "ytmp4") {
+        await conn.sendMessage(
+          m.chat,
+          { video: { url: media.url }, mimetype: "video/mp4", caption: `` },
+          { quoted: m }
+        )
+      } else {
+        await conn.sendMessage(
+          m.chat,
+          {
+            document: { url: media.url },
+            fileName: `${title}.mp4`,
+            mimetype: "video/mp4",
+            caption: ``
+          },
+          { quoted: m }
+        )
+      }
       await m.react("✔️")
       return
     }
@@ -94,7 +110,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 }
 
-handler.command = handler.help = ["playaudio", "playvideo"]
+handler.command = handler.help = ["play", "yta", "ytmp3", "play2", "ytv", "ytmp4", "mp4"]
 handler.tags = ["descargas"]
 handler.group = true
 
@@ -129,25 +145,46 @@ async function fetchJson(url) {
   }
 }
 
-async function downloadBuffer(fileUrl) {
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 60000)
-    const r = await fetch(fileUrl, { signal: controller.signal })
-    if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    const ab = await r.arrayBuffer()
-    clearTimeout(timeout)
-    return Buffer.from(ab)
-  } catch {
-    return null
-  }
-}
-
 function formatDuration(totalSeconds) {
   if (!Number.isFinite(totalSeconds)) return "No disponible"
   const h = Math.floor(totalSeconds / 3600)
   const m = Math.floor((totalSeconds % 3600) / 60)
   const s = Math.floor(totalSeconds % 60)
+
   if (h > 0) return `${h} horas ${m} minutos ${s} segundos`
   return `${m} minutos ${s} segundos`
+}
+
+async function getRemoteSize(fileUrl) {
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    const r = await fetch(fileUrl, { method: "HEAD", signal: controller.signal })
+    clearTimeout(timeout)
+    const len = r.headers.get("content-length")
+    if (!len) return "No disponible"
+    return formatBytes(Number(len))
+  } catch {
+    return "No disponible"
+  }
+}
+
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "No disponible"
+  const units = ["B", "KB", "MB", "GB"]
+  let i = 0
+  let n = bytes
+  while (n >= 1024 && i < units.length - 1) {
+    n /= 1024
+    i++
+  }
+  return `${n.toFixed(2)}${units[i]}`
+}
+
+function formatViews(views) {
+  if (views === undefined) return "No disponible"
+  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B (${views.toLocaleString()})`
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M (${views.toLocaleString()})`
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k (${views.toLocaleString()})`
+  return views.toString()
 }
