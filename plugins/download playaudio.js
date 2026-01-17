@@ -1,57 +1,160 @@
 import fetch from "node-fetch"
-import yts from 'yt-search'
+import yts from "yt-search"
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-    try {
-        if (!text.trim()) return conn.reply(m.chat, `❀ Por favor, ingresa el nombre o link de YouTube.`, m)
-        await m.react('🕒')
-        
-        const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([a-zA-Z0-9_-]{11})/)
-        const query = videoMatch ? 'https://youtu.be/' + videoMatch[1] : text
-        const search = await yts(query)
-        const result = videoMatch ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all[0] : search.all[0]
-        
-        if (!result) throw 'ꕥ No se encontraron resultados.'
-        
-        const { title, thumbnail, timestamp, views, url, author } = result
-        const info = `「✦」Descargando *<${title}>*\n\n> ❑ Canal » *${author.name}*\n> ♡ Vistas » *${views.toLocaleString()}*\n> ✧︎ Duración » *${timestamp}*\n> ➪ Link » ${url}`
-        
-        const thumb = (await conn.getFile(thumbnail)).data
-        await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
+const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
-        const isAudio = ['play', 'yta', 'ytmp3', 'playaudio'].includes(command)
-        const endpoint = isAudio ? 'ytaudio' : 'ytvideo'
-        const apiUrl = `https://api-adonix.ultraplus.click/download/${endpoint}?apikey=AdonixKeyvr85v01953&url=${encodeURIComponent(url)}`
-        
-        const res = await fetch(apiUrl)
-        const json = await res.json()
+const handler = async (m, { conn, text, command }) => {
+  try {
+    if (!text?.trim())
+      return conn.reply(
+        m.chat,
+        `🪻 *Por favor, ingresa el nombre o enlace del video.*`,
+        m,
+        rcanal
+      )
 
-        if (!json.status || !json.data?.url) throw '⚠ El servidor de Adonix no devolvió un enlace válido.'
+    let videoIdMatch = text.match(youtubeRegexID)
+    let search = await yts(
+      videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text
+    )
 
-        if (isAudio) {
-            await conn.sendMessage(m.chat, { 
-                audio: { url: json.data.url }, 
-                fileName: `${title}.mp3`, 
-                mimetype: 'audio/mpeg' 
-            }, { quoted: m })
-        } else {
-            await conn.sendMessage(m.chat, {
-                video: { url: json.data.url },
-                caption: `> ❀ ${title}`,
-                mimetype: 'video/mp4',
-                fileName: `${title}.mp4`
-            }, { quoted: m })
-        }
-        
-        await m.react('✔️')
+    let video = videoIdMatch
+      ? search.all.find(v => v.videoId === videoIdMatch[1]) ||
+        search.videos.find(v => v.videoId === videoIdMatch[1])
+      : search.videos?.[0]
 
-    } catch (e) {
-        await m.react('✖️')
-        return conn.reply(m.chat, `⚠︎ Error: ${e}`, m)
+    if (!video)
+      return conn.reply(
+        m.chat,
+        '✧ No se encontraron resultados para tu búsqueda.',
+        m
+      )
+
+    const { title, thumbnail, timestamp, views, ago, url, author } = video
+    const vistas = formatViews(views)
+    const canal = author?.name || 'Desconocido'
+    const canalLink = author?.url || 'https://youtube.com'
+
+    const infoMessage = `🍃 *${title}*
+
+> ✿ *Canal:* ${canal}
+> ✎ *Vistas:* ${vistas}
+> ❑ *Duración:* ${timestamp || 'Desconocido'}
+> ☁︎ *Publicado:* ${ago || 'Desconocido'}
+> ➪ *Enlace:* ${url}
+
+> ✧︎ *Canal:* ${canalLink}`.trim()
+
+    const thumb = (await conn.getFile(thumbnail))?.data
+
+    const JT = {
+      contextInfo: {
+        externalAdReply: {
+          title: title,
+          body: textbot,
+          mediaType: 1,
+          previewType: 0,
+          mediaUrl: url,
+          sourceUrl: url,
+          thumbnail: thumb,
+          renderLargerThumbnail: false,
+        },
+      },
     }
+
+    await conn.reply(m.chat, infoMessage, m, JT)
+
+    if (command === 'playaudio') {
+      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytmp3?url=${encodeURIComponent(url)}`
+      const res = await fetch(apiUrl)
+      const json = await res.json()
+
+      if (!json.status || !json.result?.download)
+        throw '*⚠ No se obtuvo un enlace de audio válido.*'
+
+      const data = json.result
+
+      await conn.sendMessage(
+        m.chat,
+        {
+          audio: { url: data.download },
+          mimetype: 'audio/mpeg',
+          fileName: `${data.title}.mp3`,
+          ptt: false,
+          contextInfo: {
+            externalAdReply: {
+              title: data.title,
+              body: canal,
+              mediaType: 1,
+              thumbnailUrl: data.thumbnail,
+              sourceUrl: url,
+              renderLargerThumbnail: true,
+            },
+          },
+        },
+        { quoted: fkontak }
+      )
+
+      await m.react('🎧')
+    }
+
+    if (command === 'playvideo') {
+      const quality = '480'
+      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytdl?url=${encodeURIComponent(url)}&type=video&quality=${quality}`
+
+      const res = await fetch(apiUrl)
+      const json = await res.json()
+
+      if (!json.status || !json.result?.url)
+        throw '⚠ No se obtuvo enlace de video válido.'
+
+      const data = json.result
+
+      await conn.sendMessage(
+        m.chat,
+        {
+          video: { url: data.url },
+          caption: title,
+          mimetype: 'video/mp4',
+          fileName: `${data.title}.mp4`,
+          contextInfo: {
+            externalAdReply: {
+              title: data.title,
+              body: canal,
+              thumbnailUrl: data.thumbnail || thumbnail,
+              sourceUrl: url,
+              mediaType: 1,
+              renderLargerThumbnail: false,
+            },
+          },
+        },
+        { quoted: fkontak }
+      )
+
+      await m.react('🎥')
+    }
+
+  } catch (err) {
+    console.error(err)
+    return conn.reply(
+      m.chat,
+      `⚠ Ocurrió un error:\n${err}`,
+      m,
+      rcanal
+    )
+  }
 }
 
-handler.command = /^(play|yta|ytmp3|play2|ytv|ytmp4|playaudio|mp4)$/i
-handler.group = true
+handler.command = ['playaudio', 'playvideo']
+handler.help = ['playaudio', 'playvideo']
+handler.tags = ['download']
 
 export default handler
+
+function formatViews(views) {
+  if (views === undefined) return "No disponible"
+  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B (${views.toLocaleString()})`
+  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
+  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
+  return views.toString()
+}
