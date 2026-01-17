@@ -1,227 +1,134 @@
+import fetch from 'node-fetch'
 import yts from 'yt-search'
+import { writeFileSync, unlinkSync, promises as fs } from 'fs'
+import path from 'path'
 
-const MAX_SECONDS = 90 * 60
-const HTTP_TIMEOUT_MS = 90 * 1000
+const estados = {}
+const TIEMPO_ESPERA = 120000
 
-function parseDurationToSeconds(d) {
-  if (d == null) return null
-  if (typeof d === 'number' && Number.isFinite(d)) return Math.max(0, Math.floor(d))
-  const s = String(d).trim()
-  if (!s) return null
-  if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10))
-  const parts = s.split(':').map((x) => x.trim()).filter(Boolean)
-  if (!parts.length || parts.some((p) => !/^\d+$/.test(p))) return null
-  let sec = 0
-  for (const p of parts) sec = sec * 60 + parseInt(p, 10)
-  return Number.isFinite(sec) ? sec : null
-}
+let handler = async (m, { conn, usedPrefix, command, text }) => {
 
-function formatErr(err, maxLen = 1500) {
-  const e = err ?? 'Error desconocido'
-  let msg = ''
+  if (!text) return; // Silencioso sin texto
 
-  if (e instanceof Error) msg = e.stack || `${e.name}: ${e.message}`
-  else if (typeof e === 'string') msg = e
-  else {
-    try {
-      msg = JSON.stringify(e, null, 2)
-    } catch {
-      msg = String(e)
-    }
-  }
-
-  msg = String(msg || 'Error desconocido').trim()
-  if (msg.length > maxLen) msg = msg.slice(0, maxLen) + '\n... (recortado)'
-  return msg
-}
-
-async function fetchJson(url, timeoutMs = HTTP_TIMEOUT_MS) {
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, {
-      method: 'GET',
-      signal: ctrl.signal,
-      headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0' }
-    })
-    const text = await res.text().catch(() => '')
-    let data = null
-    try {
-      data = text ? JSON.parse(text) : null
-    } catch {
-      data = null
-    }
-    if (!res.ok) {
-      const msg = data?.message || data?.error || text || `HTTP ${res.status}`
-      throw new Error(`HTTP ${res.status}: ${String(msg).slice(0, 400)}`)
-    }
-    if (data == null) throw new Error('Respuesta JSON inválida')
-    return data
-  } finally {
-    clearTimeout(t)
-  }
-}
-
-async function fetchBuffer(url, timeoutMs = HTTP_TIMEOUT_MS) {
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'user-agent': 'Mozilla/5.0' } })
-    if (!res.ok) throw new Error(`No se pudo bajar el audio (HTTP ${res.status})`)
-    const ab = await res.arrayBuffer()
-    return Buffer.from(ab)
-  } finally {
-    clearTimeout(t)
-  }
-}
-
-function guessMimeFromUrl(fileUrl = '') {
-  let ext = ''
-  try {
-    ext = new URL(fileUrl).pathname.split('.').pop() || ''
-  } catch {
-    ext = String(fileUrl).split('.').pop() || ''
-  }
-  ext = '.' + String(ext).toLowerCase().replace(/[^a-z0-9]/g, '')
-  if (ext === '.m4a') return 'audio/mp4'
-  if (ext === '.opus') return 'audio/ogg; codecs=opus'
-  if (ext === '.webm') return 'audio/webm'
-  return 'audio/mpeg'
-}
-
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  const chatId = m?.chat || m?.key?.remoteJid
-  if (!chatId) return
-
-  if (!text) {
-    return conn.sendMessage(
-      chatId,
-      { text: `「✦」Escribe el nombre o link del video.\n> ✐ Ejemplo » *${usedPrefix + command} lovely*` },
-      { quoted: m }
-    )
-  }
-
-  await conn.sendMessage(chatId, { react: { text: '🕒', key: m.key } }).catch(() => {})
-
-  let ytUrl = text.trim()
-  let ytInfo = null
+  const isLink = text.includes('youtube.com') || text.includes('youtu.be')
+  let video
 
   try {
-    if (!/youtu\.be|youtube\.com/i.test(ytUrl)) {
-      const search = await yts(ytUrl)
-      const first = search?.videos?.[0]
-      if (!first) {
-        await conn.sendMessage(chatId, { text: '「✦」No se encontraron resultados.' }, { quoted: m })
-        return
-      }
-      ytInfo = first
-      ytUrl = first.url
+    if (isLink) {
+      const videoId = text.split('v=')[1]?.split('&')[0] || text.split('/').pop()
+      const search = await yts({ videoId })
+      video = search
     } else {
-      const search = await yts({ query: ytUrl, pages: 1 })
-      if (search?.videos?.length) ytInfo = search.videos[0]
+      const search = await yts(text)
+      video = search.videos[0]
     }
+
+    if (!video) return; 
+
+    await m.react("👁️");
+
+    if (estados[m.sender]) clearTimeout(estados[m.sender].timeout)
+
+    estados[m.sender] = {
+      step: 'esperando_tipo',
+      videoInfo: video,
+      command,
+      intentos: 0,
+      timeout: setTimeout(() => delete estados[m.sender], TIEMPO_ESPERA)
+    }
+
+    const info = `
+╭─〔 ♆ *Uᴄʜɪʜᴀ Pʟᴀʏᴇʀ* ♆ 〕─╮
+│
+│ 🗡️ *Tɪᴛᴜʟᴏ:* ${video.title}
+│ 👤 *Aᴜᴛᴏʀ:* ${video.author.name}
+│ ⏳ *Dᴜʀᴀᴄɪᴏɴ:* ${video.timestamp}
+│ 👁️ *Vɪsᴛᴀs:* ${video.views.toLocaleString()}
+│
+╰─────────────────────╯
+
+⛅ *¿Qᴜᴇ ᴅᴇsᴇᴀs ʜᴀᴄᴇʀ?*
+Responde con:
+1️⃣ *Para Audio (MP3)*
+2️⃣ *Para Vídeo (MP4)*
+
+🌑 *Eʟ ᴘᴏᴅᴇʀ sᴇ ᴇsᴛᴀ ᴄᴀɴᴀʟɪᴢᴀɴᴅᴏ...*`.trim();
+
+    await conn.sendMessage(
+      m.chat,
+      { image: { url: video.thumbnail }, caption: info },
+      { quoted: m }
+    )
   } catch (e) {
-    await conn.sendMessage(
-      chatId,
-      { text: `「✦」Error buscando en YouTube.\n\n> 🧩 Error:\n\`\`\`\n${formatErr(e)}\n\`\`\`` },
-      { quoted: m }
-    )
-    return
-  }
-
-  const durSec =
-    parseDurationToSeconds(ytInfo?.duration?.seconds) ??
-    parseDurationToSeconds(ytInfo?.seconds) ??
-    parseDurationToSeconds(ytInfo?.duration) ??
-    parseDurationToSeconds(ytInfo?.timestamp)
-
-  if (durSec && durSec > MAX_SECONDS) {
-    await conn.sendMessage(
-      chatId,
-      { text: `「✦」Audio muy largo.\n> Máx: ${Math.floor(MAX_SECONDS / 60)} min.` },
-      { quoted: m }
-    )
-    return
-  }
-
-  const title = ytInfo?.title || 'Audio'
-  const author = ytInfo?.author?.name || ytInfo?.author || 'Desconocido'
-  const duration = ytInfo?.timestamp || 'Desconocida'
-  const thumbnail = ytInfo?.thumbnail
-
-  const caption =
-    `「✦」Descargando *<${title}>*\n\n` +
-
- `> ❀ Canal » *${author}*\n` +
-    `> ⴵ Duración » *${duration}*\n` +
-    `> 🜸 Link » ${ytUrl}`
-
-  try {
-    if (thumbnail) await conn.sendMessage(chatId, { image: { url: thumbnail }, caption }, { quoted: m })
-    else await conn.sendMessage(chatId, { text: caption }, { quoted: m })
-  } catch {}
-
-  const apiKey = globalThis?.apikey
-  if (!apiKey) {
-    await conn.sendMessage(chatId, { text: `「✦」Falta configurar globalThis.apikey para usar la API.` }, { quoted: m })
-    return
-  }
-
-  let apiResp = null
-  try {
-    const apiUrl =
-      `https://api-adonix.ultraplus.click/download/ytaudio` +
-      `?apikey=${encodeURIComponent(String(apiKey))}` +
-      `&url=${encodeURIComponent(String(ytUrl))}`
-
-    apiResp = await fetchJson(apiUrl, HTTP_TIMEOUT_MS)
-  } catch (e) {
-    await conn.sendMessage(
-      chatId,
-      { text: `「✦」Error usando la API.\n\n> 🧩 Error:\n\`\`\`\n${formatErr(e)}\n\`\`\`` },
-      { quoted: m }
-    )
-    return
-  }
-
-  if (!apiResp?.status || !apiResp?.data?.url) {
-    await conn.sendMessage(
-      chatId,
-      { text: `「✦」La API no devolvió un link válido.\n\n> Respuesta:\n\`\`\`\n${String(JSON.stringify(apiResp, null, 2)).slice(0, 1500)}\n\`\`\`` },
-      { quoted: m }
-    )
-    return
-  }
-
-  const directUrl = String(apiResp.data.url)
-  const apiTitle = apiResp?.data?.title || title
-
-  try {
-    const audioBuffer = await fetchBuffer(directUrl, HTTP_TIMEOUT_MS)
-    const mime = guessMimeFromUrl(directUrl)
-
-    await conn.sendMessage(
-      chatId,
-      {
-        audio: audioBuffer,
-        mimetype: mime,
-        fileName: `${apiTitle}.mp3`
-      },
-      { quoted: m }
-    )
-
-    await conn.sendMessage(chatId, { react: { text: '✔️', key: m.key } }).catch(() => {})
-  } catch (e) {
-    await conn.sendMessage(
-      chatId,
-      { text: `「✦」Error descargando/enviando el audio.\n\n> 🧩 Error:\n\`\`\`\n${formatErr(e)}\n\`\`\`` },
-      { quoted: m }
-    )
+    console.error(e)
   }
 }
 
-handler.help = ['play <texto|link>']
-handler.tags = ['multimedia']
-handler.command = ['play']
+handler.before = async (m, { conn }) => {
+  const estado = estados[m.sender]
+  if (!estado || !m.text) return false
+
+  const resp = m.text.trim()
+  const isAudio = resp === '1' || resp === '1️⃣'
+  const isVideo = resp === '2' || resp === '2️⃣'
+
+  if (isAudio || isVideo) {
+    clearTimeout(estado.timeout)
+    const tipo = isAudio ? 'mp3' : 'mp4'
+
+    await m.react("⏳");
+    await m.reply(isAudio ? `🎧 *Canalizando audio...*` : `🎥 *Invocando video...*`);
+
+    await enviarArchivo(m, conn, estado.videoInfo.url, tipo, estado.videoInfo.title)
+    delete estados[m.sender]
+    return true
+  }
+
+  return false
+}
+
+async function enviarArchivo(m, conn, url, tipo, titulo) {
+  try {
+    const apiURL = `https://optishield.uk/api/?type=youtubedl&apikey=c50919b9828c357cd81e753f03d4c000&url=${encodeURIComponent(url)}&video=${tipo === 'mp3' ? 0 : 1}`
+
+    const res = await fetch(apiURL)
+    const json = await res.json()
+
+    if (!json?.result?.download) throw new Error('Falla de chakra')
+
+    const buffer = await (await fetch(json.result.download)).buffer()
+    const mimetype = tipo === 'mp3' ? 'audio/mpeg' : 'video/mp4'
+
+    if (tipo === 'mp3') {
+      await conn.sendMessage(m.chat, { audio: buffer, mimetype, fileName: `${titulo}.mp3` }, { quoted: m })
+    } else {
+      await conn.sendMessage(m.chat, { video: buffer, mimetype, fileName: `${titulo}.mp4`, caption: `⚡ *Destino cumplido.*` }, { quoted: m })
+    }
+
+    await m.react("✅");
+
+  } catch (e) {
+    // Fallback Vreden
+    try {
+      const vType = tipo === 'mp3' ? 'audio' : 'video'
+      const vRes = await fetch(`https://api.vreden.my.id/api/v1/download/youtube/${vType}?url=${encodeURIComponent(url)}&quality=128`)
+      const vJson = await vRes.json()
+      const dlUrl = vJson.result?.download?.url || vJson.result?.url
+
+      if (dlUrl) {
+        await conn.sendMessage(m.chat, { [tipo === 'mp3' ? 'audio' : 'video']: { url: dlUrl }, mimetype: tipo === 'mp3' ? 'audio/mpeg' : 'video/mp4' }, { quoted: m })
+        await m.react("✅")
+      } else {
+        throw new Error()
+      }
+    } catch (err) {
+      await m.reply(`❌ *El Genjutsu ha fallado. No se pudo descargar.*`)
+    }
+  }
+}
+
+handler.help = ['play']
+handler.tags = ['descargas']
+handler.command = ['play', 'musicdl']
 
 export default handler
