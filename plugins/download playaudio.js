@@ -1,134 +1,57 @@
-import fetch from 'node-fetch'
+import fetch from "node-fetch"
 import yts from 'yt-search'
-import { writeFileSync, unlinkSync, promises as fs } from 'fs'
-import path from 'path'
 
-const estados = {}
-const TIEMPO_ESPERA = 120000
-
-let handler = async (m, { conn, usedPrefix, command, text }) => {
-
-  if (!text) return; // Silencioso sin texto
-
-  const isLink = text.includes('youtube.com') || text.includes('youtu.be')
-  let video
-
-  try {
-    if (isLink) {
-      const videoId = text.split('v=')[1]?.split('&')[0] || text.split('/').pop()
-      const search = await yts({ videoId })
-      video = search
-    } else {
-      const search = await yts(text)
-      video = search.videos[0]
-    }
-
-    if (!video) return; 
-
-    await m.react("👁️");
-
-    if (estados[m.sender]) clearTimeout(estados[m.sender].timeout)
-
-    estados[m.sender] = {
-      step: 'esperando_tipo',
-      videoInfo: video,
-      command,
-      intentos: 0,
-      timeout: setTimeout(() => delete estados[m.sender], TIEMPO_ESPERA)
-    }
-
-    const info = `
-╭─〔 ♆ *Uᴄʜɪʜᴀ Pʟᴀʏᴇʀ* ♆ 〕─╮
-│
-│ 🗡️ *Tɪᴛᴜʟᴏ:* ${video.title}
-│ 👤 *Aᴜᴛᴏʀ:* ${video.author.name}
-│ ⏳ *Dᴜʀᴀᴄɪᴏɴ:* ${video.timestamp}
-│ 👁️ *Vɪsᴛᴀs:* ${video.views.toLocaleString()}
-│
-╰─────────────────────╯
-
-⛅ *¿Qᴜᴇ ᴅᴇsᴇᴀs ʜᴀᴄᴇʀ?*
-Responde con:
-1️⃣ *Para Audio (MP3)*
-2️⃣ *Para Vídeo (MP4)*
-
-🌑 *Eʟ ᴘᴏᴅᴇʀ sᴇ ᴇsᴛᴀ ᴄᴀɴᴀʟɪᴢᴀɴᴅᴏ...*`.trim();
-
-    await conn.sendMessage(
-      m.chat,
-      { image: { url: video.thumbnail }, caption: info },
-      { quoted: m }
-    )
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-handler.before = async (m, { conn }) => {
-  const estado = estados[m.sender]
-  if (!estado || !m.text) return false
-
-  const resp = m.text.trim()
-  const isAudio = resp === '1' || resp === '1️⃣'
-  const isVideo = resp === '2' || resp === '2️⃣'
-
-  if (isAudio || isVideo) {
-    clearTimeout(estado.timeout)
-    const tipo = isAudio ? 'mp3' : 'mp4'
-
-    await m.react("⏳");
-    await m.reply(isAudio ? `🎧 *Canalizando audio...*` : `🎥 *Invocando video...*`);
-
-    await enviarArchivo(m, conn, estado.videoInfo.url, tipo, estado.videoInfo.title)
-    delete estados[m.sender]
-    return true
-  }
-
-  return false
-}
-
-async function enviarArchivo(m, conn, url, tipo, titulo) {
-  try {
-    const apiURL = `https://optishield.uk/api/?type=youtubedl&apikey=c50919b9828c357cd81e753f03d4c000&url=${encodeURIComponent(url)}&video=${tipo === 'mp3' ? 0 : 1}`
-
-    const res = await fetch(apiURL)
-    const json = await res.json()
-
-    if (!json?.result?.download) throw new Error('Falla de chakra')
-
-    const buffer = await (await fetch(json.result.download)).buffer()
-    const mimetype = tipo === 'mp3' ? 'audio/mpeg' : 'video/mp4'
-
-    if (tipo === 'mp3') {
-      await conn.sendMessage(m.chat, { audio: buffer, mimetype, fileName: `${titulo}.mp3` }, { quoted: m })
-    } else {
-      await conn.sendMessage(m.chat, { video: buffer, mimetype, fileName: `${titulo}.mp4`, caption: `⚡ *Destino cumplido.*` }, { quoted: m })
-    }
-
-    await m.react("✅");
-
-  } catch (e) {
-    // Fallback Vreden
+const handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
-      const vType = tipo === 'mp3' ? 'audio' : 'video'
-      const vRes = await fetch(`https://api.vreden.my.id/api/v1/download/youtube/${vType}?url=${encodeURIComponent(url)}&quality=128`)
-      const vJson = await vRes.json()
-      const dlUrl = vJson.result?.download?.url || vJson.result?.url
+        if (!text.trim()) return conn.reply(m.chat, `❀ Por favor, ingresa el nombre o link de YouTube.`, m)
+        await m.react('🕒')
+        
+        const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([a-zA-Z0-9_-]{11})/)
+        const query = videoMatch ? 'https://youtu.be/' + videoMatch[1] : text
+        const search = await yts(query)
+        const result = videoMatch ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all[0] : search.all[0]
+        
+        if (!result) throw 'ꕥ No se encontraron resultados.'
+        
+        const { title, thumbnail, timestamp, views, url, author } = result
+        const info = `「✦」Descargando *<${title}>*\n\n> ❑ Canal » *${author.name}*\n> ♡ Vistas » *${views.toLocaleString()}*\n> ✧︎ Duración » *${timestamp}*\n> ➪ Link » ${url}`
+        
+        const thumb = (await conn.getFile(thumbnail)).data
+        await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
 
-      if (dlUrl) {
-        await conn.sendMessage(m.chat, { [tipo === 'mp3' ? 'audio' : 'video']: { url: dlUrl }, mimetype: tipo === 'mp3' ? 'audio/mpeg' : 'video/mp4' }, { quoted: m })
-        await m.react("✅")
-      } else {
-        throw new Error()
-      }
-    } catch (err) {
-      await m.reply(`❌ *El Genjutsu ha fallado. No se pudo descargar.*`)
+        const isAudio = ['play', 'yta', 'ytmp3', 'playaudio'].includes(command)
+        const endpoint = isAudio ? 'ytaudio' : 'ytvideo'
+        const apiUrl = `https://api-adonix.ultraplus.click/download/${endpoint}?apikey=AdonixKeyvr85v01953&url=${encodeURIComponent(url)}`
+        
+        const res = await fetch(apiUrl)
+        const json = await res.json()
+
+        if (!json.status || !json.data?.url) throw '⚠ El servidor de Adonix no devolvió un enlace válido.'
+
+        if (isAudio) {
+            await conn.sendMessage(m.chat, { 
+                audio: { url: json.data.url }, 
+                fileName: `${title}.mp3`, 
+                mimetype: 'audio/mpeg' 
+            }, { quoted: m })
+        } else {
+            await conn.sendMessage(m.chat, {
+                video: { url: json.data.url },
+                caption: `> ❀ ${title}`,
+                mimetype: 'video/mp4',
+                fileName: `${title}.mp4`
+            }, { quoted: m })
+        }
+        
+        await m.react('✔️')
+
+    } catch (e) {
+        await m.react('✖️')
+        return conn.reply(m.chat, `⚠︎ Error: ${e}`, m)
     }
-  }
 }
 
-handler.help = ['play']
-handler.tags = ['descargas']
-handler.command = ['play', 'musicdl']
+handler.command = /^(play|yta|ytmp3|play2|ytv|ytmp4|playaudio|mp4)$/i
+handler.group = true
 
 export default handler
