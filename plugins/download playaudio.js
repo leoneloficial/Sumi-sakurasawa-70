@@ -1,88 +1,58 @@
-// by shadow.xyz
-
 import fetch from 'node-fetch'
 
-const handler = async (m, { conn, text, command }) => {
-  if (!text)
-    return conn.reply(
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  try {
+    if (!text) return conn.reply(
       m.chat,
-      `🎧 *Ingresa qué quieres buscar en SoundCloud*\n\nEjemplo:\n.${command} twice`,
+      `🌱 *Ingresa un nombre de canción*\nEjemplo:\n${usedPrefix + command} Hola`,
       m
     )
 
-  try {
-    await m.react('🕒')
+    let url = `${global.APIs.zenzxz.url}/api/search/applemusic?keyword=${encodeURIComponent(text)}&country=sg`
 
-    // 🔍 Buscar (1 resultado)
-    const searchUrl = `https://api.delirius.store/search/soundcloud?q=${encodeURIComponent(text)}&limit=1`
-    const searchRes = await fetch(searchUrl)
-    const searchJson = await searchRes.json()
+    let res = await fetch(url)
+    if (!res.ok) throw await res.text()
 
-    if (!searchJson.status || !searchJson.data?.length)
-      throw 'No se encontraron resultados'
+    let json = await res.json()
+    let data = json.data
 
-    const sc = searchJson.data[0]
+    if (!data || data.length < 1)
+      return conn.reply(m.chat, `⚠️ No se encontraron resultados para *${text}*`, m)
 
-    // ⏱ Duración
-    const duration = (ms) => {
-      let s = Math.floor(ms / 1000)
-      let m = Math.floor(s / 60)
-      s %= 60
-      return `${m}:${s.toString().padStart(2, '0')}`
-    }
+    let song = data[0]
 
-    // 📝 Info
-    const caption = `
-🎵 *${sc.title}*
-👤 *Artista:* ${sc.artist || 'Desconocido'}
-⏱ *Duración:* ${duration(sc.duration)}
-❤️ *Likes:* ${sc.likes}
-▶️ *Reproducciones:* ${sc.play}
+    let caption = `
+╭━━━〔 𝐀𝐏𝐏𝐋𝐄 𝐌𝐔𝐒𝐈𝐂 〕━━⬣
+│🎵 *Título:* ${song.title}
+│👤 *Artista:* ${song.artist}
+│💽 *Álbum:* ${song.album}
+│🕒 *Duración:* ${(song.duration / 1000).toFixed(0)} seg
+│🔗 *Link:* ${song.url}
+╰━━━━━━━━━━━━━━━━━━━⬣`.trim()
 
-⬇️ *Descargando audio...*
-    `.trim()
+    await conn.sendMessage(m.chat, {
+      image: { url: song.artwork },
+      caption
+    }, { quoted: m })
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        image: { url: sc.image },
-        caption
-      },
-      { quoted: m }
-    )
-
-    // ⬇️ Descargar audio usando el link encontrado
-    const dlUrl = `https://api.delirius.store/download/soundcloud?url=${encodeURIComponent(sc.link)}`
-    const dlRes = await fetch(dlUrl)
-    const dlJson = await dlRes.json()
-
-    if (!dlJson.status || !dlJson.data?.download)
-      throw 'No se pudo descargar el audio'
-
-    const audio = dlJson.data
-
-    // 🎧 Enviar audio
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: { url: audio.download },
+    if (song.preview) {
+      await conn.sendMessage(m.chat, {
+        audio: { url: song.preview },
         mimetype: 'audio/mpeg',
-        fileName: `${audio.title}.mp3`
-      },
-      { quoted: m }
-    )
-
-    await m.react('✅')
+        fileName: `${song.title}.mp3`
+      }, { quoted: m })
+    }
 
   } catch (e) {
     console.error(e)
-    await m.react('❌')
-    conn.reply(m.chat, '❌ Error al procesar SoundCloud', m)
+    conn.reply(m.chat, '*Ocurrió un error al buscar la canción.*', m)
   }
 }
 
-handler.help = ['soundcloud + [texto]']
-handler.tags = ['music']
-handler.command = ['soundcloud', 'sound']
+handler.help = ['applemusic']
+handler.tags = ['search']
+handler.command = ['apple', 'applemusic']
+handler.group = true
+handler.register = true
 
 export default handler
