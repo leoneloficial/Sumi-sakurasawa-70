@@ -1,160 +1,88 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
+// by shadow.xyz
 
-const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
+import fetch from 'node-fetch'
 
 const handler = async (m, { conn, text, command }) => {
-  try {
-    if (!text?.trim())
-      return conn.reply(
-        m.chat,
-        `🪻 *Por favor, ingresa el nombre o enlace del video.*`,
-        m,
-        rcanal
-      )
-
-    let videoIdMatch = text.match(youtubeRegexID)
-    let search = await yts(
-      videoIdMatch ? 'https://youtu.be/' + videoIdMatch[1] : text
-    )
-
-    let video = videoIdMatch
-      ? search.all.find(v => v.videoId === videoIdMatch[1]) ||
-        search.videos.find(v => v.videoId === videoIdMatch[1])
-      : search.videos?.[0]
-
-    if (!video)
-      return conn.reply(
-        m.chat,
-        '✧ No se encontraron resultados para tu búsqueda.',
-        m
-      )
-
-    const { title, thumbnail, timestamp, views, ago, url, author } = video
-    const vistas = formatViews(views)
-    const canal = author?.name || 'Desconocido'
-    const canalLink = author?.url || 'https://youtube.com'
-
-    const infoMessage = `🍃 *${title}*
-
-> ✿ *Canal:* ${canal}
-> ✎ *Vistas:* ${vistas}
-> ❑ *Duración:* ${timestamp || 'Desconocido'}
-> ☁︎ *Publicado:* ${ago || 'Desconocido'}
-> ➪ *Enlace:* ${url}
-
-> ✧︎ *Canal:* ${canalLink}`.trim()
-
-    const thumb = (await conn.getFile(thumbnail))?.data
-
-    const JT = {
-      contextInfo: {
-        externalAdReply: {
-          title: title,
-          body: textbot,
-          mediaType: 1,
-          previewType: 0,
-          mediaUrl: url,
-          sourceUrl: url,
-          thumbnail: thumb,
-          renderLargerThumbnail: false,
-        },
-      },
-    }
-
-    await conn.reply(m.chat, infoMessage, m, JT)
-
-    if (command === 'playaudio') {
-      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytmp3?url=${encodeURIComponent(url)}`
-      const res = await fetch(apiUrl)
-      const json = await res.json()
-
-      if (!json.status || !json.result?.download)
-        throw '*⚠ No se obtuvo un enlace de audio válido.*'
-
-      const data = json.result
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: { url: data.download },
-          mimetype: 'audio/mpeg',
-          fileName: `${data.title}.mp3`,
-          ptt: false,
-          contextInfo: {
-            externalAdReply: {
-              title: data.title,
-              body: canal,
-              mediaType: 1,
-              thumbnailUrl: data.thumbnail,
-              sourceUrl: url,
-              renderLargerThumbnail: true,
-            },
-          },
-        },
-        { quoted: fkontak }
-      )
-
-      await m.react('🎧')
-    }
-
-    if (command === 'playvideo') {
-      const quality = '480'
-      const apiUrl = `https://api-shadow-xyz.onrender.com/download/ytdl?url=${encodeURIComponent(url)}&type=video&quality=${quality}`
-
-      const res = await fetch(apiUrl)
-      const json = await res.json()
-
-      if (!json.status || !json.result?.url)
-        throw '⚠ No se obtuvo enlace de video válido.'
-
-      const data = json.result
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          video: { url: data.url },
-          caption: title,
-          mimetype: 'video/mp4',
-          fileName: `${data.title}.mp4`,
-          contextInfo: {
-            externalAdReply: {
-              title: data.title,
-              body: canal,
-              thumbnailUrl: data.thumbnail || thumbnail,
-              sourceUrl: url,
-              mediaType: 1,
-              renderLargerThumbnail: false,
-            },
-          },
-        },
-        { quoted: fkontak }
-      )
-
-      await m.react('🎥')
-    }
-
-  } catch (err) {
-    console.error(err)
+  if (!text)
     return conn.reply(
       m.chat,
-      `⚠ Ocurrió un error:\n${err}`,
-      m,
-      rcanal
+      `🎧 *Ingresa qué quieres buscar en SoundCloud*\n\nEjemplo:\n.${command} twice`,
+      m
     )
+
+  try {
+    await m.react('🕒')
+
+    // 🔍 Buscar (1 resultado)
+    const searchUrl = `https://api.delirius.store/search/soundcloud?q=${encodeURIComponent(text)}&limit=1`
+    const searchRes = await fetch(searchUrl)
+    const searchJson = await searchRes.json()
+
+    if (!searchJson.status || !searchJson.data?.length)
+      throw 'No se encontraron resultados'
+
+    const sc = searchJson.data[0]
+
+    // ⏱ Duración
+    const duration = (ms) => {
+      let s = Math.floor(ms / 1000)
+      let m = Math.floor(s / 60)
+      s %= 60
+      return `${m}:${s.toString().padStart(2, '0')}`
+    }
+
+    // 📝 Info
+    const caption = `
+🎵 *${sc.title}*
+👤 *Artista:* ${sc.artist || 'Desconocido'}
+⏱ *Duración:* ${duration(sc.duration)}
+❤️ *Likes:* ${sc.likes}
+▶️ *Reproducciones:* ${sc.play}
+
+⬇️ *Descargando audio...*
+    `.trim()
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        image: { url: sc.image },
+        caption
+      },
+      { quoted: m }
+    )
+
+    // ⬇️ Descargar audio usando el link encontrado
+    const dlUrl = `https://api.delirius.store/download/soundcloud?url=${encodeURIComponent(sc.link)}`
+    const dlRes = await fetch(dlUrl)
+    const dlJson = await dlRes.json()
+
+    if (!dlJson.status || !dlJson.data?.download)
+      throw 'No se pudo descargar el audio'
+
+    const audio = dlJson.data
+
+    // 🎧 Enviar audio
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: { url: audio.download },
+        mimetype: 'audio/mpeg',
+        fileName: `${audio.title}.mp3`
+      },
+      { quoted: m }
+    )
+
+    await m.react('✅')
+
+  } catch (e) {
+    console.error(e)
+    await m.react('❌')
+    conn.reply(m.chat, '❌ Error al procesar SoundCloud', m)
   }
 }
 
-handler.command = ['playaudio', 'playvideo']
-handler.help = ['playaudio', 'playvideo']
-handler.tags = ['download']
+handler.help = ['soundcloud + [texto]']
+handler.tags = ['music']
+handler.command = ['soundcloud', 'sound']
 
 export default handler
-
-function formatViews(views) {
-  if (views === undefined) return "No disponible"
-  if (views >= 1e9) return `${(views / 1e9).toFixed(1)}B (${views.toLocaleString()})`
-  if (views >= 1e6) return `${(views / 1e6).toFixed(1)}M (${views.toLocaleString()})`
-  if (views >= 1e3) return `${(views / 1e3).toFixed(1)}K (${views.toLocaleString()})`
-  return views.toString()
-}
