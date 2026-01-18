@@ -21,32 +21,31 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         const thumb = (await conn.getFile(thumbnail)).data
         await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
 
-        // 3. Determinar si es audio o video para la nueva API
+        // 3. Determinar si es audio o video (Comandos play/yta/ytmp3 para audio, otros para video)
         const isAudio = ['play', 'yta', 'ytmp3', 'playaudio'].includes(command)
         const format = isAudio ? 'mp3' : 'mp4'
-        const apiKey = 'barboza' // Tu apikey proporcionada
+        const apiKey = 'barboza' 
 
-        // 4. Llamada a la nueva API: getmod-mediahub
+        // 4. Llamada a la API: getmod-mediahub
         const apiUrl = `https://getmod-mediahub.vercel.app/api/ytdl?url=${encodeURIComponent(url)}&format=${format}&apikey=${apiKey}`
         const res = await fetch(apiUrl)
         const json = await res.json()
 
-        // Basado en tu JSON de ejemplo: json.status y json.dl
         if (!json.status || !json.dl) throw '⚠ No se pudo obtener el archivo de descarga.'
 
-        // 5. Enviar el archivo descargado
+        // 5. Enviar el archivo descargado como DOCUMENTO
         if (isAudio) {
             await conn.sendMessage(m.chat, { 
-                audio: { url: json.dl }, 
-                fileName: `${json.title || title}.mp3`, 
-                mimetype: 'audio/mpeg' 
+                document: { url: json.dl }, 
+                fileName: `${title}.mp3`, 
+                mimetype: 'audio/mpeg'
             }, { quoted: m })
         } else {
             await conn.sendMessage(m.chat, { 
-                video: { url: json.dl }, 
-                fileName: `${json.title || title}.mp4`, 
-                caption: `> ❀ ${json.title || title}`,
-                mimetype: 'video/mp4'
+                document: { url: json.dl }, 
+                fileName: `${title}.mp4`, 
+                mimetype: 'video/mp4',
+                caption: `> ❀ ${title}`
             }, { quoted: m })
         }
 
@@ -59,7 +58,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 }
 
-handler.command = /^(play|yta|ytmp3|play2|ytv|ytmp4|playaudio|mp4)$/i
+handler.command = ['play', 'yta', 'ytmp3', 'play2', 'ytv', 'ytmp4'];
+handler.help = ['play <texto>', 'play2 <texto>'];
+handler.tags = ['media'];
 handler.group = false
 
 export default handler
