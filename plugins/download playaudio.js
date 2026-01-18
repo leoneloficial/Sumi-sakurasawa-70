@@ -1,135 +1,65 @@
-import fetch from 'node-fetch'
+import fetch from "node-fetch"
 import yts from 'yt-search'
-import { spawn } from 'child_process'
-import { writeFileSync, unlinkSync, promises as fs } from 'fs'
-import path from 'path'
 
-const estados = {}
-const TIEMPO_ESPERA = 120000
+const handler = async (m, { conn, text, usedPrefix, command }) => {
+    try {
+        if (!text.trim()) return conn.reply(m.chat, `❀ Por favor, ingresa el nombre o link de YouTube.`, m)
+        await m.react('🕒')
 
-let handler = async (m, { conn, usedPrefix, command, args, text }) => {
+        // 1. Buscar el video en YouTube
+        const videoMatch = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([a-zA-Z0-9_-]{11})/)
+        const query = videoMatch ? 'https://youtu.be/' + videoMatch[1] : text
+        const search = await yts(query)
+        const result = videoMatch ? search.videos.find(v => v.videoId === videoMatch[1]) || search.all[0] : search.all[0]
 
-if (!text) return m.reply(
-`🪐 Ingresa un texto o enlace de YouTube.
-Ejemplo: *${usedPrefix + command} autos edits*`
-)
+        if (!result) throw 'ꕥ No se encontraron resultados.'
 
-const isLink = text.includes('youtube.com') || text.includes('youtu.be')
-let video
+        const { title, thumbnail, timestamp, views, url, author } = result
+        const info = `「✦」Descargando *<${title}>*\n\n> ❑ Canal » *${author.name}*\n> ♡ Vistas » *${views.toLocaleString()}*\n> ✧︎ Duración » *${timestamp}*\n> ➪ Link » ${url}`
 
-if (isLink) {
-  const search = await yts({ videoId: text.split('v=')[1] || text.split('/').pop() })
-  video = search
-} else {
-  const search = await yts(text)
-  video = search.videos[0]
+        // 2. Enviar la miniatura e información
+        const thumb = (await conn.getFile(thumbnail)).data
+        await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: m })
+
+        // 3. Determinar si es audio o video para la nueva API
+        const isAudio = ['play', 'yta', 'ytmp3', 'playaudio'].includes(command)
+        const format = isAudio ? 'mp3' : 'mp4'
+        const apiKey = 'barboza' // Tu apikey proporcionada
+
+        // 4. Llamada a la nueva API: getmod-mediahub
+        const apiUrl = `https://getmod-mediahub.vercel.app/api/ytdl?url=${encodeURIComponent(url)}&format=${format}&apikey=${apiKey}`
+        const res = await fetch(apiUrl)
+        const json = await res.json()
+
+        // Basado en tu JSON de ejemplo: json.status y json.dl
+        if (!json.status || !json.dl) throw '⚠ No se pudo obtener el archivo de descarga.'
+
+        // 5. Enviar el archivo descargado
+        if (isAudio) {
+            await conn.sendMessage(m.chat, { 
+                audio: { url: json.dl }, 
+                fileName: `${json.title || title}.mp3`, 
+                mimetype: 'audio/mpeg' 
+            }, { quoted: m })
+        } else {
+            await conn.sendMessage(m.chat, { 
+                video: { url: json.dl }, 
+                fileName: `${json.title || title}.mp4`, 
+                caption: `> ❀ ${json.title || title}`,
+                mimetype: 'video/mp4'
+            }, { quoted: m })
+        }
+
+        await m.react('✔️')
+
+    } catch (e) {
+        console.error(e)
+        await m.react('✖️')
+        return conn.reply(m.chat, `⚠︎ Error: ${e.message || e}`, m)
+    }
 }
 
-if (!video) return m.reply('🪐 Video no encontrado.')
-if (estados[m.sender]) clearTimeout(estados[m.sender].timeout)
-
-estados[m.sender] = {
-  step: 'esperando_tipo',
-  videoInfo: video,
-  command,
-  intentos: 0,
-  timeout: setTimeout(() => delete estados[m.sender], TIEMPO_ESPERA)
-}
-
-let info =
-`*╭─「 🪐 ${video.title} 」*
-│ ❒ *Título:* ${video.title}
-│ ✶ *Autor:* ${video.author.name}
-│ ⤿ *Duración:* ${video.timestamp}
-│ ⤿ *Publicado:* ${video.ago}
-│ ⤿ *Vistas:* ${video.views.toLocaleString()}
-│ ⤿ *Canal:* ${video.author.url.replace('https://', '')}
-*╰─〔 Tipo: Descarga 〕*
-
-⛅ *¿Quieres el audio o el vídeo?*
-Responde con:
-1 para Audio (mp3)
-2 para Vídeo (mp4)`
-
-await conn.sendMessage(
-  m.chat,
-  { image: { url: video.thumbnail }, caption: info },
-  { quoted: m }
-)
-}
-
-handler.before = async (m, { conn }) => {
-
-const estado = estados[m.sender]
-if (!estado) return false
-
-if (estado.step === 'esperando_tipo') {
-  const resp = (m.text || '').trim()
-
-  if (resp === '1' || resp === '1️⃣') {
-    clearTimeout(estado.timeout)
-    await m.reply(`🪐 Descargando audio de: *${estado.videoInfo.title}*`)
-    await enviarArchivo(m, conn, estado.videoInfo.url, 'mp3', estado.videoInfo.title)
-    delete estados[m.sender]
-    return true
-  }
-
-  if (resp === '2' || resp === '2️⃣') {
-    clearTimeout(estado.timeout)
-    await m.reply(`⛅ Descargando vídeo de: *${estado.videoInfo.title}*`)
-    await enviarArchivo(m, conn, estado.videoInfo.url, 'mp4', estado.videoInfo.title)
-    delete estados[m.sender]
-    return true
-  }
-
-  estado.intentos++
-  if (estado.intentos <= 1) {
-    await m.reply('🪐 Por favor responde con *1 (audio)* o *2 (vídeo)*.')
-  }
-
-  return true
-}
-
-return false
-}
-
-async function enviarArchivo(m, conn, url, tipo, titulo) {
-const sendDoc = async (buffer, fileName, mimetype) => {
-  await conn.sendMessage(
-    m.chat,
-    { document: buffer, fileName, caption: `🪐 Archivo descargado para: *${titulo}*`, mimetype },
-    { quoted: m }
-  )
-}
-
-try {
-  const apiURL =
-    `https://optishield.uk/api/?type=youtubedl` +
-    `&apikey=c50919b9828c357cd81e753f03d4c000` +
-    `&url=${encodeURIComponent(url)}` +
-    `&video=${tipo === 'mp3' ? 0 : 1}`
-
-  const res = await fetch(apiURL)
-  const json = await res.json()
-
-  if (!json?.result?.download)
-    throw new Error('No se pudo obtener el archivo')
-
-  const buffer = await (await fetch(json.result.download)).buffer()
-
-  await sendDoc(
-    buffer,
-    `${titulo}.${tipo}`,
-    tipo === 'mp3' ? 'audio/mpeg' : 'video/mp4'
-  )
-
-} catch (e) {
-  await m.reply(`🪐 Error al descargar ${tipo}.\n${e.message}`)
-}
-}
-
-handler.help = ['play']
-handler.tags = ['descargas']
-handler.command = ['play', 'musicdl']
+handler.command = /^(play|yta|ytmp3|play2|ytv|ytmp4|playaudio|mp4)$/i
+handler.group = false
 
 export default handler
