@@ -59,7 +59,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 }
 
-handler.command = ['play', 'play'];
+handler.command = ['play', 'play2'];
 handler.help = ['play <texto>', 'play<texto>'];
 handler.tags = ['media'];
 handler.group = false
