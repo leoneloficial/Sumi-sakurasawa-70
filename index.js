@@ -33,16 +33,22 @@ const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
 let { say } = cfonts
 console.log(chalk.magentaBright('\n❀ Iniciando...'))
-say('Yuki Suou', {
-font: 'simple',
-align: 'left',
-gradient: ['green', 'white']
-})
-say('Made with love by Destroy', {
-font: 'console',
-align: 'center',
-colors: ['cyan', 'magenta', 'yellow']
-})
+
+// --- INICIO DE CFONTS DEL PRIMER CÓDIGO ---
+say('keisitop', {
+  font: 'block', 
+  align: 'center',
+  colors: ['red', 'white'], 
+  background: 'black' 
+});
+
+say(`Developed By • Keistop bot`, {
+  font: 'console',
+  align: 'center',
+  colors: ['magenta']
+});
+// --- FIN DE CFONTS ---
+
 protoType()
 serialize()
 
