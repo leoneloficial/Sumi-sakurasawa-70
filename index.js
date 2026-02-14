@@ -31,12 +31,12 @@ const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
-let { say } = cfonts
-console.log(chalk.magentaBright('\n❀ Iniciando...'))
+import { say } from 'cfonts'
+console.log(chalk.magentaBright('\n❄ Iniciando...'))
 say('Yuki Suou', {
-font: 'simple',
-align: 'left',
-gradient: ['green', 'white']
+  font: 'simple',
+  align: 'left',
+  gradient: ['green', 'white']
 })
 say('Made with love by Destroy', {
 font: 'console',
