@@ -31,38 +31,20 @@ const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
-const { say } = cfonts
-
-function verify() {
-  const dirs = ['tmp', 'Sesiones/Subbots', 'Sesiones/Principal'];
-  for (const dir of dirs) {
-    if (typeof dir === 'string' && dir.trim() !== '') {
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true });
-      }
-    }
-  }
-}
-verify();
-
-console.log(chalk.magentaBright('\n❄ Iniciando...'))
-say('Yuki', {
-  font: 'simple',
-  align: 'left',
-  gradient: ['green', 'white']
+let { say } = cfonts
+console.log(chalk.magentaBright('\n❀ Iniciando...'))
+say('Yuki Suou', {
+font: 'simple',
+align: 'left',
+gradient: ['green', 'white']
 })
-
 say('Made with love by Destroy', {
 font: 'console',
 align: 'center',
 colors: ['cyan', 'magenta', 'yellow']
 })
-
-if (!global.wasInit) {
-    protoType()
-    serialize()
-    global.wasInit = true
-}
+protoType()
+serialize()
 
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
 return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
@@ -347,6 +329,7 @@ const [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find] = test
 const s = global.support = { ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find }
 Object.freeze(global.support)
 }
+// Tmp
 setInterval(async () => {
 const tmpDir = join(__dirname, 'tmp')
 try {
