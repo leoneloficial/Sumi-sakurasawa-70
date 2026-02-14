@@ -29,7 +29,7 @@ import readline, { createInterface } from 'readline'
 import NodeCache from 'node-cache'
 const { CONNECTING } = ws
 const { chain } = lodash
-const PORT = process.env.PORT || process.env.SERVER_PORT || 5003
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
 let { say } = cfonts
 console.log(chalk.magentaBright('\n❀ Iniciando...'))
@@ -45,10 +45,6 @@ colors: ['cyan', 'magenta', 'yellow']
 })
 protoType()
 serialize()
-
-if (!existsSync("./tmp")) {
-  mkdirSync("./tmp");
-}
 
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
 return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
@@ -138,7 +134,8 @@ msgRetryCounterCache: msgRetryCounterCache || new Map(),
 userDevicesCache: userDevicesCache || new Map(),
 defaultQueryTimeoutMs: undefined,
 cachedGroupMetadata: (jid) => global.conn.chats[jid] ?? {},
-version: version,
+version: [2, 3000, 1027934701],
+//version: version,
 keepAliveIntervalMs: 55000,
 maxIdleTimeMs: 60000,
 }
