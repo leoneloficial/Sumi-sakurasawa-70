@@ -58,8 +58,11 @@ align: 'center',
 colors: ['cyan', 'magenta', 'yellow']
 })
 
-protoType()
-serialize()
+if (!global.wasInit) {
+    protoType()
+    serialize()
+    global.wasInit = true
+}
 
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
 return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
