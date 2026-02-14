@@ -32,12 +32,14 @@ const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
 import { say } from 'cfonts'
+import chalk from 'chalk'
 console.log(chalk.magentaBright('\n❄ Iniciando...'))
-say('Yuki Suou', {
+say('Yuki', {
   font: 'simple',
   align: 'left',
   gradient: ['green', 'white']
 })
+
 say('Made with love by Destroy', {
 font: 'console',
 align: 'center',
