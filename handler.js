@@ -1,364 +1,363 @@
-import { smsg } from "./lib/simple.js"
-import { format } from "util"
-import { fileURLToPath } from "url"
-import path, { join } from "path"
-import fs, { unwatchFile, watchFile } from "fs"
-import chalk from "chalk"
-import fetch from "node-fetch"
-import ws from "ws"
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
+import './settings.js'
+import './plugins/_allfake.js'
+import cfonts from 'cfonts'
+import { createRequire } from 'module'
+import { fileURLToPath, pathToFileURL } from 'url'
+import { platform } from 'process'
+import * as ws from 'ws'
+import fs, { readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileSync, rmSync, watch } from 'fs'
+import yargs from 'yargs'
+import { spawn, execSync } from 'child_process'
+import lodash from 'lodash'
+import { yukiJadiBot } from './plugins/sockets-serbot.js'
+import chalk from 'chalk'
+import syntaxerror from 'syntax-error'
+import pino from 'pino'
+import Pino from 'pino'
+import path, { join, dirname } from 'path'
+import { Boom } from '@hapi/boom'
+import { makeWASocket, protoType, serialize } from './lib/simple.js'
+import { Low, JSONFile } from 'lowdb'
+import store from './lib/store.js'
+const { proto } = (await import('@whiskeysockets/baileys')).default
+import pkg from 'google-libphonenumber'
+const { PhoneNumberUtil } = pkg
+const phoneUtil = PhoneNumberUtil.getInstance()
+const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser } = await import('@whiskeysockets/baileys')
+import readline, { createInterface } from 'readline'
+import NodeCache from 'node-cache'
+const { CONNECTING } = ws
+const { chain } = lodash
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
-const { proto } = (await import("@whiskeysockets/baileys")).default
-const isNumber = x => typeof x === "number" && !isNaN(x)
-const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
-clearTimeout(this)
-resolve()
-}, ms))
+let { say } = cfonts
+console.log(chalk.magentaBright('\n❀ Iniciando...'))
+say('Yuki Suou', {
+font: 'simple',
+align: 'left',
+gradient: ['green', 'white']
+})
+say('Made with love by Destroy', {
+font: 'console',
+align: 'center',
+colors: ['cyan', 'magenta', 'yellow']
+})
+protoType()
+serialize()
 
-export async function handler(chatUpdate) {
-this.msgqueque = this.msgqueque || []
-this.uptime = this.uptime || Date.now()
-if (!chatUpdate) return
-this.pushMessage(chatUpdate.messages).catch(console.error)
-let m = chatUpdate.messages[chatUpdate.messages.length - 1]
-if (!m) return
-if (global.db.data == null) await global.loadDatabase()
-try {
-m = smsg(this, m) || m
-if (!m) return
-m.exp = 0
-try {
-let user = global.db.data.users[m.sender]
-if (typeof user !== "object") global.db.data.users[m.sender] = {}
-if (user) {
-if (!("name" in user)) user.name = m.name
-if (!("exp" in user) || !isNumber(user.exp)) user.exp = 0
-if (!("coin" in user) || !isNumber(user.coin)) user.coin = 0
-if (!("bank" in user) || !isNumber(user.bank)) user.bank = 0
-if (!("level" in user) || !isNumber(user.level)) user.level = 0
-if (!("health" in user) || !isNumber(user.health)) user.health = 100
-if (!("genre" in user)) user.genre = ""
-if (!("birth" in user)) user.birth = ""
-if (!("marry" in user)) user.marry = ""
-if (!("description" in user)) user.description = ""
-if (!("packstickers" in user)) user.packstickers = null
-if (!("premium" in user)) user.premium = false
-if (!("premiumTime" in user)) user.premiumTime = 0
-if (!("banned" in user)) user.banned = false
-if (!("bannedReason" in user)) user.bannedReason = ""
-if (!("commands" in user) || !isNumber(user.commands)) user.commands = 0
-if (!("afk" in user) || !isNumber(user.afk)) user.afk = -1
-if (!("afkReason" in user)) user.afkReason = ""
-if (!("warn" in user) || !isNumber(user.warn)) user.warn = 0
-} else global.db.data.users[m.sender] = {
-name: m.name,
-exp: 0,
-coin: 0,
-bank: 0,
-level: 0,
-health: 100,
-genre: "",
-birth: "",
-marry: "",
-description: "",
-packstickers: null,
-premium: false,
-premiumTime: 0,
-banned: false,
-bannedReason: "",
-commands: 0,
-afk: -1,
-afkReason: "",
-warn: 0
+global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
+return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
 }
-let chat = global.db.data.chats[m.chat]
-if (typeof chat !== "object") global.db.data.chats[m.chat] = {}
-if (chat) {
-if (!("isBanned" in chat)) chat.isBanned = false
-if (!("isMute" in chat)) chat.isMute = false;
-if (!("welcome" in chat)) chat.welcome = false
-if (!("sWelcome" in chat)) chat.sWelcome = ""
-if (!("sBye" in chat)) chat.sBye = ""
-if (!("detect" in chat)) chat.detect = true
-if (!("primaryBot" in chat)) chat.primaryBot = null
-if (!("modoadmin" in chat)) chat.modoadmin = false
-if (!("antiLink" in chat)) chat.antiLink = true
-if (!("nsfw" in chat)) chat.nsfw = false
-if (!("economy" in chat)) chat.economy = true;
-if (!("gacha" in chat)) chat.gacha = true
-} else global.db.data.chats[m.chat] = {
-isBanned: false,
-isMute: false,
-welcome: false,
-sWelcome: "",
-sBye: "",
-detect: true,
-primaryBot: null,
-modoadmin: false,
-antiLink: true,
-nsfw: false,
-economy: true,
-gacha: true
+global.__dirname = function dirname(pathURL) {
+return path.dirname(global.__filename(pathURL, true))
 }
-let settings = global.db.data.settings[this.user.jid]
-if (typeof settings !== "object") global.db.data.settings[this.user.jid] = {}
-if (settings) {
-if (!("self" in settings)) settings.self = false
-if (!("jadibotmd" in settings)) settings.jadibotmd = true
-} else global.db.data.settings[this.user.jid] = {
-self: false,
-jadibotmd: true
-}} catch (e) {
+global.__require = function require(dir = import.meta.url) {
+return createRequire(dir)
+}
+global.timestamp = { start: new Date() }
+const __dirname = global.__dirname(import.meta.url)
+global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
+global.prefix = new RegExp('^[#!./-]')
+
+global.db = new Low(/https?:\/\//.test(global.opts['db'] || '') ? new cloudDBAdapter(global.opts['db']) : new JSONFile('database.json'))
+global.DATABASE = global.db
+global.loadDatabase = async function loadDatabase() {
+if (global.db.READ) {
+return new Promise((resolve) => setInterval(async function () {
+if (!global.db.READ) {
+clearInterval(this)
+resolve(global.db.data == null ? global.loadDatabase() : global.db.data)
+}}, 1 * 1000))
+}
+if (global.db.data !== null) return
+global.db.READ = true
+await global.db.read().catch(console.error)
+global.db.READ = null
+global.db.data = {
+users: {},
+chats: {},
+settings: {},
+...(global.db.data || {}),
+}
+global.db.chain = chain(global.db.data)
+}
+loadDatabase()
+
+const { state, saveState, saveCreds } = await useMultiFileAuthState(global.sessions)
+const msgRetryCounterMap = new Map()
+const msgRetryCounterCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
+const userDevicesCache = new NodeCache({ stdTTL: 0, checkperiod: 0 })
+const { version } = await fetchLatestBaileysVersion()
+let phoneNumber = global.botNumber
+const methodCodeQR = process.argv.includes("qr")
+const methodCode = !!phoneNumber || process.argv.includes("code")
+const MethodMobile = process.argv.includes("mobile")
+const colors = chalk.bold.white
+const qrOption = chalk.blueBright
+const textOption = chalk.cyan
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+const question = (texto) => new Promise((resolver) => rl.question(texto, resolver))
+let opcion
+if (methodCodeQR) {
+opcion = '1'
+}
+if (!methodCodeQR && !methodCode && !fs.existsSync(`./${sessions}/creds.json`)) {
+do {
+opcion = await question(colors("Seleccione una opción:\n") + qrOption("1. Con código QR\n") + textOption("2. Con código de texto de 8 dígitos\n--> "))
+if (!/^[1-2]$/.test(opcion)) {
+console.log(chalk.bold.redBright(`No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`))
+}} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${sessions}/creds.json`))
+}
+console.info = () => {}
+const connectionOptions = {
+logger: pino({ level: 'silent' }),
+printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
+mobile: MethodMobile,
+browser: ["MacOs", "Safari"],
+auth: {
+creds: state.creds,
+keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
+},
+markOnlineOnConnect: false,
+generateHighQualityLinkPreview: true,
+syncFullHistory: false,
+getMessage: async (key) => {
+try {
+let jid = jidNormalizedUser(key.remoteJid)
+let msg = await store.loadMessage(jid, key.id)
+return msg?.message || ""
+} catch (error) {
+return ""
+}},
+msgRetryCounterCache: msgRetryCounterCache || new Map(),
+userDevicesCache: userDevicesCache || new Map(),
+defaultQueryTimeoutMs: undefined,
+cachedGroupMetadata: (jid) => global.conn.chats[jid] ?? {},
+version: version,
+keepAliveIntervalMs: 55000,
+maxIdleTimeMs: 60000,
+}
+global.conn = makeWASocket(connectionOptions)
+conn.ev.on("creds.update", saveCreds)
+
+if (!fs.existsSync(`./${sessions}/creds.json`)) {
+if (opcion === '2' || methodCode) {
+opcion = '2'
+if (!conn.authState.creds.registered) {
+let addNumber
+if (!!phoneNumber) {
+addNumber = phoneNumber.replace(/[^0-9]/g, '')
+} else {
+do {
+phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`[ ✿ ]  Por favor, Ingrese el número de WhatsApp.\n${chalk.bold.magentaBright('---> ')}`)))
+phoneNumber = phoneNumber.replace(/\D/g, '')
+if (!phoneNumber.startsWith('+')) {
+phoneNumber = `+${phoneNumber}`
+}} while (!await isValidPhoneNumber(phoneNumber))
+rl.close()
+addNumber = phoneNumber.replace(/\D/g, '')
+setTimeout(async () => {
+let codeBot = await conn.requestPairingCode(addNumber)
+codeBot = codeBot.match(/.{1,4}/g)?.join("-") || codeBot
+console.log(chalk.bold.white(chalk.bgMagenta(`[ ✿ ]  Código:`)), chalk.bold.white(chalk.white(codeBot)))
+}, 3000)
+}}}}
+conn.isInit = false
+conn.well = false
+conn.logger.info(`[ ✿ ]  H E C H O\n`)
+if (!opts['test']) {
+if (global.db) setInterval(async () => {
+if (global.db.data) await global.db.write()
+if (opts['autocleartmp'] && (global.support || {}).find) {
+const tmp = [os.tmpdir(), 'tmp', `${jadi}`]
+tmp.forEach((filename) => cp.spawn('find', [filename, '-amin', '3', '-type', 'f', '-delete']))
+}}, 30 * 1000)
+}
+
+async function connectionUpdate(update) {
+const { connection, lastDisconnect, isNewLogin } = update
+global.stopped = connection
+if (isNewLogin) conn.isInit = true
+const code = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
+if (code && code !== DisconnectReason.loggedOut && conn?.ws.socket == null) {
+await global.reloadHandler(true).catch(console.error)
+global.timestamp.connect = new Date()
+}
+if (global.db.data == null) loadDatabase()
+if (update.qr != 0 && update.qr != undefined || methodCodeQR) {
+if (opcion == '1' || methodCodeQR) {
+console.log(chalk.green.bold(`[ ✿ ]  Escanea este código QR`))
+}}
+if (connection === "open") {
+const userJid = jidNormalizedUser(conn.user.id)
+const userName = conn.user.name || conn.user.verifiedName || "Desconocido"
+await joinChannels(conn)
+console.log(chalk.green.bold(`[ ✿ ]  Conectado a: ${userName}`))
+}
+let reason = new Boom(lastDisconnect?.error)?.output?.statusCode
+if (connection === "close") {
+if ([401, 440, 428, 405].includes(reason)) {
+console.log(chalk.red(`→ (${code}) › Cierra la session Principal.`))
+}
+console.log(chalk.yellow("→ Reconectando el Bot Principal..."))
+await global.reloadHandler(true).catch(console.error)
+}}
+process.on('uncaughtException', console.error)
+let isInit = true
+let handler = await import('./handler.js')
+global.reloadHandler = async function (restatConn) {
+try {
+const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error)
+if (Object.keys(Handler || {}).length) handler = Handler
+} catch (e) {
 console.error(e)
 }
-if (typeof m.text !== "string") m.text = ""
-const user = global.db.data.users[m.sender]
+if (restatConn) {
+const oldChats = global.conn.chats
 try {
-const actual = user.name || ""
-const nuevo = m.pushName || await this.getName(m.sender)
-if (typeof nuevo === "string" && nuevo.trim() && nuevo !== actual) {
-user.name = nuevo
-}} catch {}
-const chat = global.db.data.chats[m.chat]
-const settings = global.db.data.settings[this.user.jid]  
-const isROwner = [...global.owner.map((number) => number)].map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender)
-const isOwner = isROwner || m.fromMe
-const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(m.sender) || user.premium == true
-const isOwners = [this.user.jid, ...global.owner.map((number) => number + "@s.whatsapp.net")].includes(m.sender)
-if (opts["queque"] && m.text && !(isPrems)) {
-const queque = this.msgqueque, time = 1000 * 5
-const previousID = queque[queque.length - 1]
-queque.push(m.id || m.key.id)
-setInterval(async function () {
-if (queque.indexOf(previousID) === -1) clearInterval(this)
-await delay(time)
-}, time)
+global.conn.ws.close()
+} catch { }
+conn.ev.removeAllListeners()
+global.conn = makeWASocket(connectionOptions, { chats: oldChats })
+isInit = true
 }
-
-if (m.isBaileys) return
-m.exp += Math.ceil(Math.random() * 10)
-let usedPrefix
-const groupMetadata = m.isGroup ? { ...(conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}), ...(((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants) && { participants: ((conn.chats[m.chat]?.metadata || await this.groupMetadata(m.chat).catch(_ => null) || {}).participants || []).map(p => ({ ...p, id: p.jid, jid: p.jid, lid: p.lid })) }) } : {}
-const participants = ((m.isGroup ? groupMetadata.participants : []) || []).map(participant => ({ id: participant.jid, jid: participant.jid, lid: participant.lid, admin: participant.admin }))
-const userGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) === m.sender) : {}) || {}
-const botGroup = (m.isGroup ? participants.find((u) => conn.decodeJid(u.jid) == this.user.jid) : {}) || {}
-const isRAdmin = userGroup?.admin == "superadmin" || false
-const isAdmin = isRAdmin || userGroup?.admin == "admin" || false
-const isBotAdmin = botGroup?.admin || false
-
-const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "./plugins")
-for (const name in global.plugins) {
-const plugin = global.plugins[name]
-if (!plugin) continue
-if (plugin.disabled) continue
-const __filename = join(___dirname, name)
-if (typeof plugin.all === "function") {
-try {
-await plugin.all.call(this, m, {
-chatUpdate,
-__dirname: ___dirname,
-__filename,
-user,
-chat,
-settings
-})
-} catch (err) {
-console.error(err)
-}}
-if (!opts["restrict"])
-if (plugin.tags && plugin.tags.includes("admin")) {
-continue
+if (!isInit) {
+conn.ev.off('messages.upsert', conn.handler)
+conn.ev.off('connection.update', conn.connectionUpdate)
+conn.ev.off('creds.update', conn.credsUpdate)
 }
-const strRegex = (str) => str.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&")
-const pluginPrefix = plugin.customPrefix || conn.prefix || global.prefix
-const match = (pluginPrefix instanceof RegExp ?
-[[pluginPrefix.exec(m.text), pluginPrefix]] :
-Array.isArray(pluginPrefix) ?
-pluginPrefix.map(prefix => {
-const regex = prefix instanceof RegExp ?
-prefix : new RegExp(strRegex(prefix))
-return [regex.exec(m.text), regex]
-}) : typeof pluginPrefix === "string" ?
-[[new RegExp(strRegex(pluginPrefix)).exec(m.text), new RegExp(strRegex(pluginPrefix))]] :
-[[[], new RegExp]]).find(prefix => prefix[1])
-if (typeof plugin.before === "function") {
-if (await plugin.before.call(this, m, {
-match,
-conn: this,
-participants,
-groupMetadata,
-userGroup,
-botGroup,
-isROwner,
-isOwner,
-isRAdmin,
-isAdmin,
-isBotAdmin,
-isPrems,
-chatUpdate,
-__dirname: ___dirname,
-__filename,
-user,
-chat,
-settings
-}))
-continue
-}
-if (typeof plugin !== "function") {
-continue
-}
-if ((usedPrefix = (match[0] || "")[0])) {
-const noPrefix = m.text.replace(usedPrefix, "")
-let [command, ...args] = noPrefix.trim().split(" ").filter(v => v)
-args = args || []
-let _args = noPrefix.trim().split(" ").slice(1)
-let text = _args.join(" ")
-command = (command || "").toLowerCase()
-const fail = plugin.fail || global.dfail
-const isAccept = plugin.command instanceof RegExp ?
-plugin.command.test(command) :
-Array.isArray(plugin.command) ?
-plugin.command.some(cmd => cmd instanceof RegExp ?
-cmd.test(command) : cmd === command) :
-typeof plugin.command === "string" ?
-plugin.command === command : false
-global.comando = command
-
-if (!isOwners && settings.self) return
-if ((m.id.startsWith("NJX-") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
-
-if (global.db.data.chats[m.chat].primaryBot && global.db.data.chats[m.chat].primaryBot !== this.user.jid) {
-const primaryBotConn = global.conns.find(conn => conn.user.jid === global.db.data.chats[m.chat].primaryBot && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED)
-const participants = m.isGroup ? (await this.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants : []
-const primaryBotInGroup = participants.some(p => p.jid === global.db.data.chats[m.chat].primaryBot)
-if (primaryBotConn && primaryBotInGroup || global.db.data.chats[m.chat].primaryBot === global.conn.user.jid) {
-throw !1
+conn.handler = handler.handler.bind(global.conn)
+conn.connectionUpdate = connectionUpdate.bind(global.conn)
+conn.credsUpdate = saveCreds.bind(global.conn, true)
+const currentDateTime = new Date()
+const messageDateTime = new Date(conn.ev)
+if (currentDateTime >= messageDateTime) {
+const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('@g.us') && chat.isChats).map((v) => v[0])
 } else {
-global.db.data.chats[m.chat].primaryBot = null
-}} else {
+const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('@g.us') && chat.isChats).map((v) => v[0])
 }
-
-if (!isAccept) continue
-m.plugin = name
-global.db.data.users[m.sender].commands++
-if (chat) {
-const botId = this.user.jid
-const primaryBotId = chat.primaryBot
-if (name !== "group-banchat.js" && chat?.isBanned && !isROwner) {
-if (!primaryBotId || primaryBotId === botId) {
-const aviso = `ꕥ El bot *${botname}* está desactivado en este grupo\n\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`.trim()
-await m.reply(aviso)
-return
-}}
-if (m.text && user.banned && !isROwner) {
-const mensaje = `ꕥ Estas baneado/a, no puedes usar comandos en este bot!\n\n> ● *Razón ›* ${user.bannedReason}\n\n> ● Si este Bot es cuenta oficial y tienes evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`.trim()
-if (!primaryBotId || primaryBotId === botId) {
-m.reply(mensaje)
-return
-}}}
-if (!isOwners && !m.chat.endsWith('g.us') && !/code|p|ping|qr|estado|status|infobot|botinfo|report|reportar|invite|join|logout|suggest|help|menu/gim.test(m.text)) return
-const adminMode = chat.modoadmin || false
-const wa = plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || pluginPrefix || m.text.slice(0, 1) === pluginPrefix || plugin.command
-if (adminMode && !isOwner && m.isGroup && !isAdmin && wa) return
-if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
-fail("owner", m, this)
-continue
+conn.ev.on('messages.upsert', conn.handler)
+conn.ev.on('connection.update', conn.connectionUpdate)
+conn.ev.on('creds.update', conn.credsUpdate)
+isInit = false
+return true
 }
-if (plugin.rowner && !isROwner) {
-fail("rowner", m, this)
-continue
-}
-if (plugin.owner && !isOwner) {
-fail("owner", m, this)
-continue
-}
-if (plugin.premium && !isPrems) {
-fail("premium", m, this)
-continue
-}
-if (plugin.group && !m.isGroup) {
-fail("group", m, this)
-continue
-} 
-if (plugin.botAdmin && !isBotAdmin) {
-fail("botAdmin", m, this)
-continue
-} 
-if (plugin.admin && !isAdmin) {
-fail("admin", m, this)
-continue
-}
-m.isCommand = true
-m.exp += plugin.exp ? parseInt(plugin.exp) : 10
-let extra = {
-match,
-usedPrefix,
-noPrefix,
-_args,
-args,
-command,
-text,
-conn: this,
-participants,
-groupMetadata,
-userGroup,
-botGroup,
-isROwner,
-isOwner,
-isRAdmin,
-isAdmin,
-isBotAdmin,
-isPrems,
-chatUpdate,
-__dirname: ___dirname,
-__filename,
-user,
-chat,
-settings
-}
-try {
-await plugin.call(this, m, extra)
-} catch (err) {
-m.error = err
-console.error(err)
-} finally {
-if (typeof plugin.after === "function") {
-try {
-await plugin.after.call(this, m, extra)
-} catch (err) {
-console.error(err)
-}}}}}} catch (err) {
-console.error(err)
-} finally {
-if (opts["queque"] && m.text) {
-const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
-if (quequeIndex !== -1)
-this.msgqueque.splice(quequeIndex, 1)
-}
-let user = global.db.data.users[m.sender]
-if (m) {
-if (m.sender && user) {
-user.exp += m.exp
-}}
-try {
-if (!opts["noprint"]) await (await import("./lib/print.js")).default(m, this)
-} catch (err) {
-console.warn(err)
-console.log(m.message)
-}}}
-
-global.dfail = (type, m, conn) => {
-const msg = {
-rowner: `『✦』El comando *${comando}* solo puede ser usado por los creadores del bot.`,
-premium: `『✦』El comando *${comando}* solo puede ser usado por los usuarios premium.`,
-group: `『✦』El comando *${comando}* solo puede ser usado en grupos.`,
-admin: `『✦』El comando *${comando}* solo puede ser usado por los administradores del grupo.`,
-botAdmin: `『✦』Para ejecutar el comando *${comando}* debo ser administrador del grupo.`
-}[type]
-if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))
-}
-let file = global.__filename(import.meta.url, true)
-watchFile(file, async () => {
-unwatchFile(file)
-console.log(chalk.magenta("Se actualizo 'handler.js'"))
-if (global.reloadHandler) console.log(await global.reloadHandler())
+process.on('unhandledRejection', (reason, promise) => {
+console.error("Rechazo no manejado detectado:", reason)
 })
+
+global.rutaJadiBot = join(__dirname, `./${jadi}`)
+if (global.yukiJadibts) {
+if (!existsSync(global.rutaJadiBot)) {
+mkdirSync(global.rutaJadiBot, { recursive: true })
+console.log(chalk.bold.cyan(`ꕥ La carpeta: ${jadi} se creó correctamente.`))
+} else {
+console.log(chalk.bold.cyan(`ꕥ La carpeta: ${jadi} ya está creada.`))
+}
+const readRutaJadiBot = readdirSync(rutaJadiBot)
+if (readRutaJadiBot.length > 0) {
+const creds = 'creds.json'
+for (const gjbts of readRutaJadiBot) {
+const botPath = join(rutaJadiBot, gjbts)
+if (existsSync(botPath) && statSync(botPath).isDirectory()) {
+const readBotPath = readdirSync(botPath)
+if (readBotPath.includes(creds)) {
+yukiJadiBot({ pathYukiJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' })
+}}}}}
+
+const pluginFolder = global.__dirname(join(__dirname, './plugins/index'))
+const pluginFilter = (filename) => /\.js$/.test(filename)
+global.plugins = {}
+async function filesInit() {
+for (const filename of readdirSync(pluginFolder).filter(pluginFilter)) {
+try {
+const file = global.__filename(join(pluginFolder, filename))
+const module = await import(file)
+global.plugins[filename] = module.default || module
+} catch (e) {
+conn.logger.error(e)
+delete global.plugins[filename]
+}}}
+filesInit().then((_) => Object.keys(global.plugins)).catch(console.error)
+global.reload = async (_ev, filename) => {
+if (pluginFilter(filename)) {
+const dir = global.__filename(join(pluginFolder, filename), true)
+if (filename in global.plugins) {
+if (existsSync(dir)) conn.logger.info(` updated plugin - '${filename}'`)
+else {
+conn.logger.warn(`deleted plugin - '${filename}'`)
+return delete global.plugins[filename]
+}} else conn.logger.info(`new plugin - '${filename}'`)
+const err = syntaxerror(readFileSync(dir), filename, {
+sourceType: 'module',
+allowAwaitOutsideFunction: true,
+})
+if (err) conn.logger.error(`syntax error while loading '${filename}'\n${format(err)}`)
+else {
+try {
+const module = (await import(`${global.__filename(dir)}?update=${Date.now()}`))
+global.plugins[filename] = module.default || module
+} catch (e) {
+conn.logger.error(`error require plugin '${filename}\n${format(e)}'`)
+} finally {
+global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)))
+}}}}
+Object.freeze(global.reload)
+watch(pluginFolder, global.reload)
+await global.reloadHandler()
+async function _quickTest() {
+const test = await Promise.all([
+spawn('ffmpeg'),
+spawn('ffprobe'),
+spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-filter_complex', 'color', '-frames:v', '1', '-f', 'webp', '-']),
+spawn('convert'),
+spawn('magick'),
+spawn('gm'),
+spawn('find', ['--version']),
+].map((p) => {
+return Promise.race([
+new Promise((resolve) => {
+p.on('close', (code) => {
+resolve(code !== 127)
+})}),
+new Promise((resolve) => {
+p.on('error', (_) => resolve(false))
+})])
+}))
+const [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find] = test
+const s = global.support = { ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find }
+Object.freeze(global.support)
+}
+// Tmp
+setInterval(async () => {
+const tmpDir = join(__dirname, 'tmp')
+try {
+const filenames = readdirSync(tmpDir)
+filenames.forEach(file => {
+const filePath = join(tmpDir, file)
+unlinkSync(filePath)})
+console.log(chalk.gray(`→ Archivos de la carpeta TMP eliminados`))
+} catch {
+console.log(chalk.gray(`→ Los archivos de la carpeta TMP no se pudieron eliminar`))
+}}, 30 * 1000) 
+_quickTest().catch(console.error)
+async function isValidPhoneNumber(number) {
+try {
+number = number.replace(/\s+/g, '')
+if (number.startsWith('+521')) {
+number = number.replace('+521', '+52')
+} else if (number.startsWith('+52') && number[4] === '1') {
+number = number.replace('+52 1', '+52')
+}
+const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
+return phoneUtil.isValidNumber(parsedNumber)
+} catch (error) {
+return false
+}}
+
+async function joinChannels(sock) {
+for (const value of Object.values(global.ch)) {
+if (typeof value === 'string' && value.endsWith('@newsletter')) {
+await sock.newsletterFollow(value).catch(() => {})
+}}}
