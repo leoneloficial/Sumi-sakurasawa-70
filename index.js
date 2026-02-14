@@ -31,8 +31,20 @@ const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
-import { say } from 'cfonts'
-import chalk from 'chalk'
+const { say } = cfonts
+
+function verify() {
+  const dirs = ['tmp', 'Sesiones/Subbots', 'Sesiones/Principal'];
+  for (const dir of dirs) {
+    if (typeof dir === 'string' && dir.trim() !== '') {
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+    }
+  }
+}
+verify();
+
 console.log(chalk.magentaBright('\n❄ Iniciando...'))
 say('Yuki', {
   font: 'simple',
@@ -45,6 +57,7 @@ font: 'console',
 align: 'center',
 colors: ['cyan', 'magenta', 'yellow']
 })
+
 protoType()
 serialize()
 
@@ -331,7 +344,6 @@ const [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find] = test
 const s = global.support = { ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find }
 Object.freeze(global.support)
 }
-// Tmp
 setInterval(async () => {
 const tmpDir = join(__dirname, 'tmp')
 try {
